@@ -10,13 +10,15 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Player extends cc.Component {
 
-    @property(cc.Label)
-    label: cc.Label = null;
+    // ******* Change this to the length of the map ******** //
+    @property
+    map_length: number = 0;
 
     reborn_position: cc.Vec3 = null;
 
     streak: cc.ParticleSystem = null;
     dead_anime: cc.ParticleSystem = null;
+    camera: cc.Camera = null;
 
     sprite: cc.Node = null;
     current_speed: number = 0;
@@ -37,6 +39,10 @@ export default class Player extends cc.Component {
         this.streak = cc.find("Canvas/player/streak").getComponent(cc.ParticleSystem);
         this.sprite = this.node.getChildByName("sprite");
         this.dead_anime = this.node.getChildByName("dead_particle").getComponent(cc.ParticleSystem);
+
+        // ************** Camera has to be names as Main Camera ****************** //
+        this.camera = cc.find("Canvas/Main Camera").getComponent(cc.Camera);
+
         cc.director.getPhysicsManager().enabled = true;
     }
 
@@ -44,13 +50,19 @@ export default class Player extends cc.Component {
         this.reborn_position = new cc.Vec3(this.node.x, this.node.y, 0);
         this.streak_gravity = this.streak.gravity.x;
         this.streak.node.position.z = this.node.position.z -1;
-        // cc.log(this.node.color.getR(), this.node.color.getG(), this.node.color.getB());
     }
 
     update (dt) {
         this.movingUpdate(dt);
+        this.cameraMove();
+
         if (this.on_wall && this.on_ground) this.playerHidden();
         else this.playerReveal();
+
+        // ************** Just for example scene ************* //
+        if (cc.director.getScene().name == "example") {
+            cc.find("tmp_btn").x = this.camera.node.x + 60;
+        }
     }
 
     playerReveal(){
@@ -69,9 +81,9 @@ export default class Player extends cc.Component {
 
     playerDead(){
         if (this.is_Dead) return;
-        cc.log("Dead");
         this.is_Dead = true;
         this.sprite.active = false;
+        this.current_speed = 0;
         this.streak.stopSystem();
         this.dead_anime.resetSystem();
         this.scheduleOnce(function(){
@@ -80,8 +92,13 @@ export default class Player extends cc.Component {
     }
 
     playerReset(){
+        this.is_Dead = false;
         this.sprite.active = true;
         this.node.position = this.reborn_position;
+        this.current_speed = 0;
+        this.node.getComponent(cc.RigidBody).linearVelocity = cc.v2(0,0);
+        this.node.getComponent(cc.RigidBody).angularVelocity = 0;
+        this.node.rotation = 0;
     }
 
     onKeyDown(event){
@@ -116,11 +133,14 @@ export default class Player extends cc.Component {
     onBeginContact(contact, self, other){
         var Manifold = contact.getWorldManifold();
 
+        // *********** Grounds and Walls has to come from different rigid body ************** //
+
         // Touch the ground
         if (other.tag == 0 && Manifold.normal.y <= -0.9){
             this.on_ground = true;
         }
-        // Touch the wall : player hidden
+
+        // Touch the wall
         if(other.tag == 0 &&  Math.abs(Manifold.normal.x) >= 0.98){
             this.on_wall = true;
             this.wall_object = other;
@@ -157,9 +177,17 @@ export default class Player extends cc.Component {
 
     movingUpdate(dt){
         if(this.is_Dead) return;
-        if (this.node.y < -360) this.node.position = this.reborn_position; // for debuging
+        if (this.node.y < -360) this.playerDead(); // for debuging
         this.node.x += this.current_speed * dt;
         if((this.current_speed == 0 && this.on_ground) || this.is_hidden) this.streak.stopSystem();
+    }
+
+    cameraMove(){
+        if(this.is_Dead) return;
+        this.camera.node.x = this.node.x;
+        if (this.camera.node.x < 0) this.camera.node.x = 0;
+
+        if (this.camera.node.x > this.map_length) this.camera.node.x = this.map_length;
     }
 
     jump(){

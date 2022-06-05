@@ -37,7 +37,7 @@ export default class SearchLight extends cc.Component {
 
     detectInLight(x: number, y: number){
         let light_x = this.node.x, light_y = this.node.y + this.light.y - this.light.height/2;
-        let light_left_x = this.node.x-this.light.width/2, light_left_y = light_y+this.light.height;
+        let light_left_x = this.node.x-this.light.width/2, light_left_y = light_y-this.light.height;
         let light_right_x = this.node.x+this.light.width/2, light_right_y = light_left_y;
         let left_slope = (light_left_y-light_y)/(light_left_x-light_x);
         let right_slope = (light_right_y-light_y)/(light_right_x-light_x);
@@ -50,6 +50,6 @@ export default class SearchLight extends cc.Component {
     detectUpdate(){
         let x = this.player.node.x;
         let y = this.player.node.y;
-        // if (this.detectInLight(x, y) && !this.player.is_hidden) this.player.playerDead();
+        if (this.detectInLight(x, y) && !this.player.is_hidden) this.player.playerDead();
     }
 }

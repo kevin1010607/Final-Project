@@ -23,7 +23,7 @@ export default class Hammer extends cc.Component {
     onBeginContact(contact, self, other){
         var Manifold = contact.getWorldManifold();
 
-        if (other.node.name == "player" && Manifold.normal.y >= 0.9){
+        if (other.node.name == "player" && Manifold.normal.y <= -0.9){
             other.node.getComponent("Player").playerDead();
         }
     }

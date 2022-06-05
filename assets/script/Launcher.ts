@@ -33,6 +33,7 @@ export default class Launcher extends cc.Component {
 
 
     start() {
+        this.node.getComponent(cc.RigidBody).angularVelocity = -11.1;
     }
 
 
@@ -57,7 +58,7 @@ export default class Launcher extends cc.Component {
 
         // up
         let bulletUp = cc.instantiate(this.bulletPrefab);
-        bulletUp.getComponent('Bullet').init(this.node, -this.moveX, 320); // 480, 32
+        bulletUp.getComponent('Bullet').init(this.node, -this.moveX, 320); // 480, 320
 
         // left
         let bulletLeft = cc.instantiate(this.bulletPrefab);
@@ -68,7 +69,6 @@ export default class Launcher extends cc.Component {
         bulletRight.getComponent('Bullet').init(this.node, -320, -this.moveY); // -480, 320
 
         this.moveX += 80; // 移動多少
-        cc.log(this.moveX);
         if (this.moveX == this.edgeX)
             this.moveX = -320;
 

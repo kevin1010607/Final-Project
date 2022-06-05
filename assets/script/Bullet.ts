@@ -67,5 +67,14 @@ export default class Bullet extends cc.Component {
 
         //     this.bulletManager.put(this.node);
         // }, 0.1); // for better animation effect, I delay 0.1s when bullet hits the enemy
+
+        var Manifold = contact.getWorldManifold();
+
+        if (otherCollider.node.name == "player"){
+            otherCollider.node.getComponent("Player").playerDead();
+        }
+        if (otherCollider.tag == 0){
+            this.node.destroy();
+        }
     }
 }
