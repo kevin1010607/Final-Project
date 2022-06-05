@@ -1225,7 +1225,7 @@
       "__uuid__": "44a682c3-8c8e-464a-a85e-febbbe37bbe8"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -1403,8 +1403,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        1044.082,
-        179.774,
+        1100,
+        180,
         0,
         0,
         0,
@@ -1753,7 +1753,9 @@
       "__id__": 34
     },
     "_enabled": true,
-    "player": null,
+    "player": {
+      "__id__": 31
+    },
     "_id": "0cChuKhLtKqqtQ25s4WrLp"
   },
   {

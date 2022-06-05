@@ -36,14 +36,34 @@ export default class SearchLight extends cc.Component {
     }
 
     detectInLight(x: number, y: number){
-        let light_x = this.node.x, light_y = this.node.y + this.light.y - this.light.height/2;
-        let light_left_x = this.node.x-this.light.width/2, light_left_y = light_y-this.light.height;
-        let light_right_x = this.node.x+this.light.width/2, light_right_y = light_left_y;
-        let left_slope = (light_left_y-light_y)/(light_left_x-light_x);
-        let right_slope = (light_right_y-light_y)/(light_right_x-light_x);
-        let slope = (y-light_y)/(x-light_x);
-        if(slope > left_slope && x > light_left_x) return true;
-        if(slope < right_slope && x < light_right_x) return true;
+        // light node width, height, x, y
+        let light_w = this.light.width * this.light.scaleX * this.node.scaleX;
+        let light_h = this.light.height * this.light.scaleY * this.node.scaleY;
+        let light_x = this.light.x * this.light.scaleX * this.node.scaleX;
+        let light_y = this.light.y * this.light.scaleY * this.node.scaleY;
+
+        // light Triangle points (p1: top, p2: bottom left, p2: bottom right)
+        let p1_x = this.node.x;
+        let p1_y = this.node.y + light_y + light_h / 2;
+        let p2_x = this.node.x - light_w / 2;
+        let p2_y = p1_y - light_h;
+        let p3_x = this.node.x + light_w / 2;
+        let p3_y = p1_y - light_h;
+        
+        // console.log(p1_x, p1_y);
+        // console.log(p2_x, p2_y);
+        // console.log(p3_x, p3_y);
+
+        // left_slope: slope of p2, p1, right_slope: slope of p3, p1, player_slope: slope of player, p1
+        let left_slope = (p2_y - p1_y) / (p2_x - p1_x);
+        let right_slope = (p3_y - p1_y) / (p3_x - p1_x);
+        let player_slope = (y - p1_y) / (x - p1_x);
+
+        // player in left half triangle
+        if(player_slope > left_slope && x > p2_x) return true;
+        // player in right half triangle
+        if(player_slope < right_slope && x < p3_x) return true;
+        // player not in triangle
         return false;
     }
 
