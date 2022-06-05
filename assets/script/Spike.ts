@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class spikes extends cc.Component {
+export default class Spike extends cc.Component {
 
     onLoad(){
         

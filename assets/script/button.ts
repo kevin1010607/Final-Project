@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class button extends cc.Component {
+export default class Button extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
     private is_push: boolean = false;

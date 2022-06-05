@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class door extends cc.Component {
+export default class Door extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
 
