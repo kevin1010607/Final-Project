@@ -5,22 +5,19 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Spike extends cc.Component {
+export default class Hammer extends cc.Component {
 
-    onLoad(){
-        
+    onLoad() {
+        cc.director.getPhysicsManager().enabled = true;
     }
-    
-    start(){
-        let action = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25), cc.delayTime(3)));
+
+    start() {
+        var sequence1 = cc.sequence(cc.moveBy(1, 0, 125), cc.moveBy(0.5, 0, -125));
+        var action = cc.repeatForever(sequence1);
         this.node.runAction(action);
-    }
-    
-    update(dt){
-        
     }
 
     onBeginContact(contact, self, other){
@@ -30,6 +27,4 @@ export default class Spike extends cc.Component {
             other.node.getComponent("Player").playerDead();
         }
     }
-
-    // update (dt) {}
 }

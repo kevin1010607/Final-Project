@@ -68,17 +68,19 @@ export default class Player extends cc.Component {
     }
 
     playerDead(){
+        if (this.is_Dead) return;
+        cc.log("Dead");
+        this.is_Dead = true;
         this.sprite.active = false;
-        this.node.getComponent(cc.RigidBody).active = false;
+        this.streak.stopSystem();
         this.dead_anime.resetSystem();
         this.scheduleOnce(function(){
             this.dead_anime.stopSystem();
-        }, 0.6)
+        }, 0.35)
     }
 
     playerReset(){
         this.sprite.active = true;
-        this.node.getComponent(cc.RigidBody).active = true;
         this.node.position = this.reborn_position;
     }
 
@@ -138,6 +140,7 @@ export default class Player extends cc.Component {
     }
 
     turnLeft(){
+        if(this.is_Dead) return;
         if(this.streak.stopped && !this.is_hidden) this.streak.resetSystem();
         if(!this.on_ground) this.getComponent(cc.RigidBody).angularVelocity  = -500;
         this.current_speed = -this.moving_speed;
@@ -145,6 +148,7 @@ export default class Player extends cc.Component {
     }
 
     turnRight(){
+        if(this.is_Dead) return;
         if(this.streak.stopped && !this.is_hidden) this.streak.resetSystem();
         if(!this.on_ground) this.getComponent(cc.RigidBody).angularVelocity  = 500;
         this.current_speed = this.moving_speed;
@@ -152,12 +156,14 @@ export default class Player extends cc.Component {
     }
 
     movingUpdate(dt){
+        if(this.is_Dead) return;
         if (this.node.y < -360) this.node.position = this.reborn_position; // for debuging
         this.node.x += this.current_speed * dt;
         if((this.current_speed == 0 && this.on_ground) || this.is_hidden) this.streak.stopSystem();
     }
 
     jump(){
+        if(this.is_Dead) return;
         if(this.streak.stopped) this.streak.resetSystem();
         this.streak.gravity.x = 0;
         this.on_ground = false;
