@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "1657d8b0-420f-4f11-b441-5708340e8e1e",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 512,
+  "height": 512,
+  "platformSettings": {},
+  "subMetas": {
+    "Large_Circular Saw Blade_0010": {
+      "ver": "1.0.6",
+      "uuid": "f19f9db1-2cbb-4d35-92e3-cea7f4e00f25",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "1657d8b0-420f-4f11-b441-5708340e8e1e",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 18,
+      "trimY": 18,
+      "width": 476,
+      "height": 476,
+      "rawWidth": 512,
+      "rawHeight": 512,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
