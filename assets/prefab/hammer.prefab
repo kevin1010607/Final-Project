@@ -38,9 +38,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 0,
+      "g": 0,
+      "b": 0,
       "a": 255
     },
     "_contentSize": {
@@ -165,13 +165,13 @@
     "body": null,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 0.1,
+      "y": -28.5
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 61.5,
-      "height": 115.8
+      "width": 61.2,
+      "height": 58.7
     },
     "_id": ""
   },
