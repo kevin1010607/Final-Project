@@ -173,6 +173,12 @@
       "__id__": 1
     },
     "_enabled": true,
+    "spike_up": {
+      "__uuid__": "351b6c89-0cfc-42e9-b701-fd48df8083d4"
+    },
+    "spike_down": {
+      "__uuid__": "ccfbd05d-554c-4207-9911-ee1571559b8e"
+    },
     "_id": ""
   },
   {

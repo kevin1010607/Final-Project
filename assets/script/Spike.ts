@@ -10,17 +10,41 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Spike extends cc.Component {
 
+    @property(cc.AudioClip)
+    spike_up: cc.AudioClip = null;
+
+    @property(cc.AudioClip)
+    spike_down: cc.AudioClip = null;
+
+    spikeup_audioID: number = 0;
+    spikedown_audioID: number = 0;
+    action: cc.Action = null;
+    volumn: number = 0;
+
     onLoad(){
         
     }
     
     start(){
-        let action = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25), cc.delayTime(3)));
-        this.node.runAction(action);
+        // this.action = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25), cc.delayTime(3)));
+        this.action = cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25));
+        this.detectInRange();
+
+        var moveup_callback = function(){
+            this.spikeup_audioID = cc.audioEngine.playEffect(this.spike_up, false);
+            cc.audioEngine.setVolume(this.spikeup_audioID, this.volumn);
+            this.node.runAction(this.action);
+            this.scheduleOnce(movedown_callback, 1.7);
+        };
+        var movedown_callback = function(){
+            this.spikedown_audioID = cc.audioEngine.playEffect(this.spike_down, false);
+            cc.audioEngine.setVolume(this.spikedown_audioID, this.volumn);
+        };
+        this.schedule(moveup_callback, 4);
     }
     
     update(dt){
-        
+        this.detectInRange();
     }
 
     onBeginContact(contact, self, other){
@@ -30,6 +54,17 @@ export default class Spike extends cc.Component {
             other.node.getComponent("Player").playerDead();
         }
     }
+
+    detectInRange(){
+        let camera = cc.find("Canvas/Main Camera");
+        let distance = Math.abs(this.node.x - camera.x);
+
+        if (distance <= 450) this.volumn = 0.6;
+        else if (distance <= 550) this.volumn = 0.4;
+        else if (distance <= 650) this.volumn = 0.2;
+        else this.volumn = 0;
+    }
+
 
     // update (dt) {}
 }

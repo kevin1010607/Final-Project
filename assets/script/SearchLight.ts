@@ -17,6 +17,14 @@ export default class SearchLight extends cc.Component {
     @property(Player)
     player: Player = null;
 
+    @property(cc.AudioClip)
+    search: cc.AudioClip = null;
+
+    in_range: boolean = false;
+    max_volumn: number = 0.6;
+    volume: number = 0;
+    search_audioID: number = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
@@ -24,10 +32,30 @@ export default class SearchLight extends cc.Component {
     start () {
         this.move();
         this.light = this.node.getChildByName('light');
+
+        let changeVoumnCallback = function(){
+            let camera = cc.find("Canvas/Main Camera");
+            if (this.search_audioID != null){
+                if(cc.audioEngine.getState(this.search_audioID) == cc.audioEngine.AudioState.PLAYING){
+                    cc.audioEngine.setVolume(this.search_audioID, this.volume);
+                }
+            }
+            if (Math.abs(this.node.x - camera.x)<= 1000 && this.in_range == false){
+                this.in_range = true;
+                this.search_audioID = cc.audioEngine.playEffect(this.search, true);
+                cc.audioEngine.setVolume(this.search_audioID, this.volume);
+            }
+            else if(Math.abs(this.node.x - camera.x) >= 1000 && this.in_range == true){
+                this.in_range = false;
+                cc.audioEngine.stopEffect(this.search_audioID);
+            }
+        }
+        this.schedule(changeVoumnCallback, 0.8);
     }
 
     update (dt) {
-        this.detectUpdate();
+        this.detectPlayer();
+        this.detectInRange();
     }
 
     move(){
@@ -49,10 +77,6 @@ export default class SearchLight extends cc.Component {
         let p2_y = p1_y - light_h;
         let p3_x = this.node.x + light_w / 2;
         let p3_y = p1_y - light_h;
-        
-        // console.log(p1_x, p1_y);
-        // console.log(p2_x, p2_y);
-        // console.log(p3_x, p3_y);
 
         // left_slope: slope of p2, p1, right_slope: slope of p3, p1, player_slope: slope of player, p1
         let left_slope = (p2_y - p1_y) / (p2_x - p1_x);
@@ -67,9 +91,20 @@ export default class SearchLight extends cc.Component {
         return false;
     }
 
-    detectUpdate(){
+    detectPlayer(){
         let x = this.player.node.x;
         let y = this.player.node.y;
         if (this.detectInLight(x, y) && !this.player.is_hidden) this.player.playerDead();
+    }
+
+    detectInRange(){
+        let camera = cc.find("Canvas/Main Camera");
+        let distance = Math.abs(this.node.x - camera.x);
+        if (distance <= 600) this.volume = 0.5;
+        else if (distance <= 700) this.volume = 0.4;
+        else if (distance <= 800) this.volume = 0.3;
+        else if (distance <= 900) this.volume = 0.2;
+        else if (distance <= 1000) this.volume = 0.1;
+        // else this.volumn = 0;
     }
 }

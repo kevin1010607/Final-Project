@@ -409,6 +409,9 @@
     },
     "_enabled": true,
     "player": null,
+    "search": {
+      "__uuid__": "83e2ace8-aaef-44b8-97a3-8241b0bbac3e"
+    },
     "_id": ""
   },
   {

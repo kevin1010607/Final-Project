@@ -10,14 +10,34 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Hammer extends cc.Component {
 
+    @property(cc.AudioClip)
+    hammer: cc.AudioClip = null;
+    hammer_audioID: number = null;
+
+    volumn: number = 0;
+    action: cc.Action = null;
+
     onLoad() {
         cc.director.getPhysicsManager().enabled = true;
     }
 
     start() {
-        var sequence1 = cc.sequence(cc.moveBy(1, 0, 125), cc.moveBy(0.5, 0, -125));
-        var action = cc.repeatForever(sequence1);
-        this.node.runAction(action);
+        this.action = cc.sequence(cc.moveBy(1, 0, 125), cc.moveBy(0.2, 0, -125));
+        var move_callback = function(){
+            this.node.runAction(this.action);
+            this.scheduleOnce(audio_callback, 1.2);
+        };
+        var audio_callback = function(){
+            this.hammer_audioID = cc.audioEngine.playEffect(this.hammer, false);
+            cc.audioEngine.setVolume(this.hammer_audioID, this.volumn);
+        }
+
+        this.schedule(move_callback, 2);
+        this.detectInRange();
+    }
+
+    update(dt) {
+        this.detectInRange();
     }
 
     onBeginContact(contact, self, other){
@@ -26,5 +46,15 @@ export default class Hammer extends cc.Component {
         if (other.node.name == "player"){
             if (Manifold.normal.y <= -0.9) other.node.getComponent("Player").playerDead();
         }
+    }
+
+    detectInRange(){
+        let camera = cc.find("Canvas/Main Camera");
+        let distance = Math.abs(this.node.x - camera.x);
+
+        if (distance <= 480) this.volumn = 0.6;
+        else if (distance <= 550) this.volumn = 0.4;
+        else if (distance <= 650) this.volumn = 0.2;
+        else this.volumn = 0;
     }
 }
