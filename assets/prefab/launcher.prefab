@@ -38,15 +38,15 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 61,
+      "g": 61,
+      "b": 61,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 85,
-      "height": 83
+      "width": 70,
+      "height": 69
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -57,13 +57,13 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
+        526.754,
+        161.574,
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        1,
+        -0.3826834323650898,
+        0.9238795325112867,
         1,
         1,
         1
@@ -73,7 +73,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": 0
+      "z": -45
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -98,10 +98,10 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "d30b9c15-80a2-4d8b-9263-d07583ef2c42"
+      "__uuid__": "05a921a9-a82b-4871-b49b-8b5df92d7caa"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
