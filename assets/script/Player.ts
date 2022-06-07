@@ -129,7 +129,7 @@ export default class Player extends cc.Component {
                 this.turnRight();
                 break;
             case macro.KEY.space:
-                if(this.on_ground == true) this.jump();             
+                if(this.is_Jumping == false) this.jump();             
                 break;
         }
     }
@@ -150,8 +150,6 @@ export default class Player extends cc.Component {
 
     onBeginContact(contact, self, other){
         var Manifold = contact.getWorldManifold(); 
-        console.log(Manifold.normal.x, Manifold.normal.y);
-        console.log(other.tag);
 
         // *********** Grounds and Walls has to come from different rigid body ************** //
 
@@ -214,13 +212,6 @@ export default class Player extends cc.Component {
         if (this.node.y < -250)  this.is_underfloor = true;
         else this.is_underfloor = false;
 
-        // ************** Just for example scene ************* //
-        /*
-        if (cc.director.getScene().name == "example") {
-            cc.find("tmp_btn").x = this.camera.node.x + 60;
-            cc.find("tmp_btn").y = this.camera.node.y + 610;
-        }
-        */
     }
 
     jump(){

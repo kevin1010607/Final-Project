@@ -243,7 +243,7 @@
     "_id": ""
   },
   {
-    "__type__": "7cf8bivaNhOyacm0ExjGKJD",
+    "__type__": "c766dLq6u5NUp63/nklJ2Tk",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -361,6 +361,8 @@
       "__id__": 1
     },
     "_enabled": true,
+    "move_direction": 0,
+    "move_amount": 15,
     "_id": ""
   },
   {
