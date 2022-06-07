@@ -40,6 +40,14 @@ export default class Spike extends cc.Component {
             this.spikedown_audioID = cc.audioEngine.playEffect(this.spike_down, false);
             cc.audioEngine.setVolume(this.spikedown_audioID, this.volumn);
         };
+
+        // ******* execute one time in the beginning ********//
+        this.spikeup_audioID = cc.audioEngine.playEffect(this.spike_up, false);
+            cc.audioEngine.setVolume(this.spikeup_audioID, this.volumn);
+            this.node.runAction(this.action);
+            this.scheduleOnce(movedown_callback, 1.7);
+        // **************************************************//
+
         this.schedule(moveup_callback, 4);
     }
     
@@ -50,8 +58,8 @@ export default class Spike extends cc.Component {
     onBeginContact(contact, self, other){
         var Manifold = contact.getWorldManifold();
 
-        if (other.node.name == "player" && Manifold.normal.y >= 0.9){
-            other.node.getComponent("Player").playerDead();
+        if (other.node.name == "player" && Manifold.normal.y >= 0.5){
+            this.scheduleOnce(function(){other.node.getComponent("Player").playerDead();}, 0.05);
         }
     }
 
@@ -59,12 +67,11 @@ export default class Spike extends cc.Component {
         let camera = cc.find("Canvas/Main Camera");
         let distance = Math.abs(this.node.x - camera.x);
 
-        if (distance <= 450) this.volumn = 0.6;
-        else if (distance <= 550) this.volumn = 0.4;
-        else if (distance <= 650) this.volumn = 0.2;
+        if (distance <= 450) this.volumn = 0.5;
+        else if (distance <= 550) this.volumn = 0.35;
+        else if (distance <= 700) this.volumn = 0.2;
         else this.volumn = 0;
     }
-
 
     // update (dt) {}
 }

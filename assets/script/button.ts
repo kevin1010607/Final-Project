@@ -21,26 +21,22 @@ export default class Button extends cc.Component {
     }
 
     onBeginContact(contact, self, other){
-        if(other.node.name == "player" && contact.getWorldManifold().normal.x == 0 && contact.getWorldManifold().normal.y == 1){
+        if(other.node.name == "player" && contact.getWorldManifold().normal.x == 0 && contact.getWorldManifold().normal.y >= 0.2){
             if(this.is_push == true){
                 return;
             }
-            
             this.is_push = true;
             let finished = cc.callFunc(function() {
-                console.log(this.node.getChildByName("door").getComponent("door"));   
                 this.node.getChildByName("door").getComponent("door").open(); 
             }, this);
         
             let action = cc.sequence(cc.moveBy(0.3, 0, -15), finished);
             this.node.runAction(action);  
-                   
         }
 
     }
+    
+    // update (dt) {
 
-
-    update (dt) {
-
-    }
+    // }
 }

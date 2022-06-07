@@ -14,6 +14,10 @@ export default class Hammer extends cc.Component {
     hammer: cc.AudioClip = null;
     hammer_audioID: number = null;
 
+    // cool down time
+    @property
+    duration: number = 2;
+
     volumn: number = 0;
     action: cc.Action = null;
 
@@ -32,7 +36,7 @@ export default class Hammer extends cc.Component {
             cc.audioEngine.setVolume(this.hammer_audioID, this.volumn);
         }
 
-        this.schedule(move_callback, 2);
+        this.schedule(move_callback, this.duration);
         this.detectInRange();
     }
 
@@ -54,7 +58,7 @@ export default class Hammer extends cc.Component {
 
         if (distance <= 480) this.volumn = 0.6;
         else if (distance <= 550) this.volumn = 0.4;
-        else if (distance <= 650) this.volumn = 0.2;
+        else if (distance <= 700) this.volumn = 0.2;
         else this.volumn = 0;
     }
 }

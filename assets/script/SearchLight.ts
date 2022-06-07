@@ -25,15 +25,13 @@ export default class SearchLight extends cc.Component {
     volume: number = 0;
     search_audioID: number = null;
 
-    // LIFE-CYCLE CALLBACKS:
-
     // onLoad () {}
 
     start () {
         this.move();
         this.light = this.node.getChildByName('light');
 
-        let changeVoumnCallback = function(){
+        let changeVolumeCallback = function(){
             let camera = cc.find("Canvas/Main Camera");
             if (this.search_audioID != null){
                 if(cc.audioEngine.getState(this.search_audioID) == cc.audioEngine.AudioState.PLAYING){
@@ -50,7 +48,7 @@ export default class SearchLight extends cc.Component {
                 cc.audioEngine.stopEffect(this.search_audioID);
             }
         }
-        this.schedule(changeVoumnCallback, 0.8);
+        this.schedule(changeVolumeCallback, 0.2);
     }
 
     update (dt) {
@@ -83,6 +81,7 @@ export default class SearchLight extends cc.Component {
         let right_slope = (p3_y - p1_y) / (p3_x - p1_x);
         let player_slope = (y - p1_y) / (x - p1_x);
 
+        if(this.node.y - this.player.node.y > light_h) return false;
         // player in left half triangle
         if(player_slope > left_slope && x > p2_x) return true;
         // player in right half triangle
@@ -100,11 +99,14 @@ export default class SearchLight extends cc.Component {
     detectInRange(){
         let camera = cc.find("Canvas/Main Camera");
         let distance = Math.abs(this.node.x - camera.x);
-        if (distance <= 600) this.volume = 0.5;
-        else if (distance <= 700) this.volume = 0.4;
-        else if (distance <= 800) this.volume = 0.3;
-        else if (distance <= 900) this.volume = 0.2;
-        else if (distance <= 1000) this.volume = 0.1;
-        // else this.volumn = 0;
+        if (distance <= 500) this.volume = 0.45;
+        else if (distance <= 600) this.volume = 0.43;
+        else if (distance <= 700) this.volume = 0.41;
+        else if (distance <= 800) this.volume = 0.39;
+        else if (distance <= 900) this.volume = 0.37;
+        else if (distance <= 1000) this.volume = 0.35;
+        else if (distance <= 1100) this.volume = 0.3;
+        else if (distance <= 1200) this.volume = 0.25;
+        else this.volume = 0;
     }
 }
