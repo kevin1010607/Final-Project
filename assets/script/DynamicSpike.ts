@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Spike extends cc.Component {
+export default class DynamicSpike extends cc.Component {
 
     @property(cc.AudioClip)
     spike_up: cc.AudioClip = null;

@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "hammer3",
+    "_name": "spike3",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -45,8 +45,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 155,
-      "height": 57
+      "width": 108,
+      "height": 73
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -57,15 +57,15 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        487,
-        792,
+        -123.683,
+        -167.71,
         0,
         0,
         0,
         0,
         1,
-        1,
-        1,
+        0.5,
+        0.5,
         1
       ]
     },
@@ -98,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "45cde57e-40e8-45e9-aebb-4052dcc6ebe9"
+      "__uuid__": "d30e0291-9039-4d1a-bef9-a7820bb6c5a6"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -147,7 +147,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "tag": 0,
+    "tag": 1,
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
@@ -160,28 +160,19 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 155,
-      "height": 57
+      "width": 108,
+      "height": 73
     },
     "_id": ""
   },
   {
-    "__type__": "cc.Animation",
+    "__type__": "75745+KRydMfruJmWOLRRU0",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 1
     },
     "_enabled": true,
-    "_defaultClip": {
-      "__uuid__": "2777ddbc-6935-4b87-8a6d-5cd31f845e8b"
-    },
-    "_clips": [
-      {
-        "__uuid__": "2777ddbc-6935-4b87-8a6d-5cd31f845e8b"
-      }
-    ],
-    "playOnLoad": true,
     "_id": ""
   },
   {

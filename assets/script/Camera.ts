@@ -8,25 +8,22 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Blade extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
+export default class Camera extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start () {
-        var action1 = cc.repeatForever(cc.sequence(cc.moveBy(0.5, -150, 0), cc.delayTime(1), cc.moveBy(0.5, 150, 0), cc.delayTime(1)));
-        var action2 = cc.repeatForever(cc.rotateBy(1,240));
-        this.node.runAction(action1);
-        this.node.runAction(action2);
 
     }
 
-    // update (dt) {}
+    update(dt){
+        if(cc.find("Canvas/player").getComponent("Player").is_Dead == false){
+            let target_positon = cc.find("Canvas/player").getPosition();
+            let cur_position = this.node.getPosition();
+            cur_position.lerp(target_positon, 0.1, cur_position);
+            this.node.setPosition(cur_position);
+        }
+    }
 }

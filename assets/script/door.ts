@@ -25,7 +25,7 @@ export default class Door extends cc.Component {
 
     /// 門移動的距離
     @property
-    move_amount: number = 600
+    move_amount: number = 600;
 
     // 最好界在 1-2秒之間不然 audio 長度會不合
     @property

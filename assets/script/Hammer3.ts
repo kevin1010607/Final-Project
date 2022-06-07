@@ -8,23 +8,13 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Blade extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
+export default class Hammer3 extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start () {
-        var action1 = cc.repeatForever(cc.sequence(cc.moveBy(0.5, -150, 0), cc.delayTime(1), cc.moveBy(0.5, 150, 0), cc.delayTime(1)));
-        var action2 = cc.repeatForever(cc.rotateBy(1,240));
-        this.node.runAction(action1);
-        this.node.runAction(action2);
 
     }
 

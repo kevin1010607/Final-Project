@@ -68,7 +68,7 @@ export default class SearchLight extends cc.Component {
         let light_x = this.light.x * this.light.scaleX * this.node.scaleX;
         let light_y = this.light.y * this.light.scaleY * this.node.scaleY;
 
-        // light Triangle points (p1: top, p2: bottom left, p2: bottom right)
+        // light Triangle points (p1: top, p2: bottom left, p3: bottom right)
         let p1_x = this.node.x;
         let p1_y = this.node.y + light_y + light_h / 2;
         let p2_x = this.node.x - light_w / 2;
@@ -92,7 +92,7 @@ export default class SearchLight extends cc.Component {
 
     detectPlayer(){
         let x = this.player.node.x;
-        let y = this.player.node.y;
+        let y = this.player.node.y;   
         if (this.detectInLight(x, y) && !this.player.is_hidden) this.player.playerDead();
     }
 

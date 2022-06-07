@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "blade",
+    "_name": "static_spike1",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -45,8 +45,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 476,
-      "height": 476
+      "width": 125,
+      "height": 24
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -57,16 +57,16 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        7.564,
-        -12.447,
+        0,
+        0,
         0,
         0,
         0,
         0,
         1,
-        0.2,
-        0.2,
-        0.2
+        1,
+        1,
+        1
       ]
     },
     "_eulerAngles": {
@@ -98,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "f19f9db1-2cbb-4d35-92e3-cea7f4e00f25"
+      "__uuid__": "0f8b2232-af76-42a4-a034-44cb0f462e58"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -147,7 +147,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "tag": 0,
+    "tag": 1,
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
@@ -160,21 +160,19 @@
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 476,
-      "height": 476
+      "width": 125,
+      "height": 24
     },
     "_id": ""
   },
   {
-    "__type__": "0d0e95rvRFO8YAA65LkVdzh",
+    "__type__": "75745+KRydMfruJmWOLRRU0",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 1
     },
     "_enabled": true,
-    "label": null,
-    "text": "hello",
     "_id": ""
   },
   {

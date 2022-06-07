@@ -98,7 +98,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "df2e0e1b-5bc1-493c-9558-c6a9ab56a74d"
+      "__uuid__": "561d6852-2c32-476d-ad2c-4bf2f7a88010"
     },
     "_type": 0,
     "_sizeMode": 0,
@@ -169,13 +169,13 @@
     "body": null,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": -0.1,
-      "y": 28.1
+      "x": 0,
+      "y": 0
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 60.9,
-      "height": 172
+      "width": 61.4,
+      "height": 115.8
     },
     "_id": ""
   },

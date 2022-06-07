@@ -14,6 +14,9 @@ export default class Player extends cc.Component {
     @property
     map_length: number = 0;
 
+    @property
+    underworld_bound: number = -190; // if player.y less than 190, anti-gravity
+
     reborn_position: cc.Vec3 = null;
 
     streak: cc.ParticleSystem = null;
@@ -46,7 +49,7 @@ export default class Player extends cc.Component {
         this.dead_anime = this.node.getChildByName("dead_particle").getComponent(cc.ParticleSystem);
 
         // ************** Camera has to be names as Main Camera ****************** //
-        this.camera = cc.find("Canvas/Main Camera").getComponent(cc.Camera);
+        // this.camera = cc.find("Canvas/Main Camera").getComponent(cc.Camera);
 
         cc.director.getPhysicsManager().enabled = true;
     }
@@ -55,20 +58,29 @@ export default class Player extends cc.Component {
         this.reborn_position = new cc.Vec3(this.node.x, this.node.y, 0);
         this.streak_gravity = this.streak.gravity.x;
         this.streak.node.position.z = this.node.position.z -1;
-        this.relative_y = this.camera.node.y - this.node.y;
+        // this.relative_y = this.camera.node.y - this.node.y;
     }
 
     update (dt) {
         this.movingUpdate(dt);
-        this.cameraMove();
+        // this.cameraMove();
 
         if (this.on_wall && this.on_ground) this.playerHidden();
         else this.playerReveal();
 
+        // anti_gravity 
+        if(this.node.y < this.underworld_bound){
+            this.getComponent(cc.RigidBody).gravityScale = -8;
+        }
+        else{
+            this.getComponent(cc.RigidBody).gravityScale = 10;
+        }
         // ************** Just for example scene ************* //
+        /*
         if (cc.director.getScene().name == "example") {
             cc.find("tmp_btn").x = this.camera.node.x + 60;
         }
+        */
     }
 
     playerReveal(){
@@ -137,12 +149,14 @@ export default class Player extends cc.Component {
     }
 
     onBeginContact(contact, self, other){
-        var Manifold = contact.getWorldManifold();
+        var Manifold = contact.getWorldManifold(); 
+        console.log(Manifold.normal.x, Manifold.normal.y);
+        console.log(other.tag);
 
         // *********** Grounds and Walls has to come from different rigid body ************** //
 
         // Touch the ground
-        if ((other.tag == 0||other.tag ==2) && Manifold.normal.y <= -0.9){
+        if ( (other.tag == 0 || other.tag == 2) && Math.abs(Manifold.normal.y) > 0.9 ){
             this.on_ground = true;
             this.is_Jumping = false;
         }
@@ -201,12 +215,33 @@ export default class Player extends cc.Component {
         else this.is_underfloor = false;
 
         // ************** Just for example scene ************* //
+        /*
         if (cc.director.getScene().name == "example") {
             cc.find("tmp_btn").x = this.camera.node.x + 60;
             cc.find("tmp_btn").y = this.camera.node.y + 610;
         }
+        */
     }
 
+    jump(){
+        if(this.is_Dead) return;
+        this.on_ground = false;
+        this.is_Jumping = true;
+        if(this.streak.stopped) this.streak.resetSystem();
+        this.streak.gravity.x = 0;
+
+        if(this.node.y < this.underworld_bound){
+            this.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, -this.jumping_speed);
+        }
+        else{
+            this.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, this.jumping_speed);
+        }
+
+        if (this.current_speed == this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = 500;
+        else if (this.current_speed == -this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = -500;
+    }
+
+    /*
     cameraMove(){
         if(this.is_Dead) return;
         this.camera.node.x = this.node.x;
@@ -228,15 +263,5 @@ export default class Player extends cc.Component {
         }
         if (this.camera.node.y > 0) this.camera.node.y = 0;
     }
-
-    jump(){
-        if(this.is_Dead) return;
-        this.on_ground = false;
-        this.is_Jumping = true;
-        if(this.streak.stopped) this.streak.resetSystem();
-        this.streak.gravity.x = 0;
-        this.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, this.jumping_speed);
-        if (this.current_speed == this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = 500;
-        else if (this.current_speed == -this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = -500;
-    }
+    */
 }
