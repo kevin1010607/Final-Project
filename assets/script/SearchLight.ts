@@ -81,7 +81,7 @@ export default class SearchLight extends cc.Component {
         let right_slope = (p3_y - p1_y) / (p3_x - p1_x);
         let player_slope = (y - p1_y) / (x - p1_x);
 
-        if(this.node.y - this.player.node.y > light_h) return false;
+        if(p1_y - this.player.node.y > light_h) return false;
         // player in left half triangle
         if(player_slope > left_slope && x > p2_x) return true;
         // player in right half triangle
