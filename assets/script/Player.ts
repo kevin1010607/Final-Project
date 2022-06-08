@@ -10,12 +10,11 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Player extends cc.Component {
 
-    // ******* Change this to the length of the map ******** //
-    @property
-    map_length: number = 0;
-
     @property
     underworld_bound: number = -190; // if player.y less than 190, anti-gravity
+
+    player_eye: cc.Node = null;
+    eye_relative: cc.Vec2 = null;
 
     reborn_position: cc.Vec3 = null;
 
@@ -46,11 +45,11 @@ export default class Player extends cc.Component {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
         this.streak = cc.find("Canvas/player/streak").getComponent(cc.ParticleSystem);
         this.sprite = this.node.getChildByName("sprite");
+        this.player_eye = this.node.getChildByName("player_eye");
         this.dead_anime = this.node.getChildByName("dead_particle").getComponent(cc.ParticleSystem);
 
         // ************** Camera has to be names as Main Camera ****************** //
         // this.camera = cc.find("Canvas/Main Camera").getComponent(cc.Camera);
-
         cc.director.getPhysicsManager().enabled = true;
     }
 
@@ -58,7 +57,9 @@ export default class Player extends cc.Component {
         this.reborn_position = new cc.Vec3(this.node.x, this.node.y, 0);
         this.streak_gravity = this.streak.gravity.x;
         this.streak.node.position.z = this.node.position.z -1;
-        // this.relative_y = this.camera.node.y - this.node.y;
+        let action = cc.repeatForever(cc.sequence(cc.scaleTo(0.2, 1, 0), cc.scaleTo(0.3, 1, 1), cc.delayTime(Math.random() * 4 + 0.5)));
+        this.player_eye.runAction(action);
+        
     }
 
     update (dt) {
@@ -81,26 +82,32 @@ export default class Player extends cc.Component {
             cc.find("tmp_btn").x = this.camera.node.x + 60;
         }
         */
+       
     }
 
     playerReveal(){
         if(!this.is_hidden) return;
         this.is_hidden = false;
         let action = cc.tintTo(0.1, 255, 255, 255);
+        let action2 = cc.tintTo(0.1, 255, 255, 255);
         this.sprite.runAction(action);
+        this.player_eye.runAction(action2);
     }
 
     playerHidden(){
         if(this.is_hidden) return;
         this.is_hidden = true;
         let action = cc.tintTo(0.1, 0, 0, 0);
+        let action2 = cc.tintTo(0.1, 0, 0, 0);
         this.sprite.runAction(action);
+        this.player_eye.runAction(action2);
     }
 
     playerDead(){
         if (this.is_Dead) return;
         this.is_Dead = true;
         this.sprite.active = false;
+        this.player_eye.active = false;
         this.current_speed = 0;
         this.streak.stopSystem();
         this.dead_anime.resetSystem();
@@ -112,6 +119,7 @@ export default class Player extends cc.Component {
     playerReset(){
         this.is_Dead = false;
         this.sprite.active = true;
+        this.player_eye.active = true;
         this.node.position = this.reborn_position;
         this.current_speed = 0;
         this.node.getComponent(cc.RigidBody).linearVelocity = cc.v2(0,0);
@@ -150,6 +158,10 @@ export default class Player extends cc.Component {
 
     onBeginContact(contact, self, other){
         var Manifold = contact.getWorldManifold(); 
+        if(other.node == this.player_eye) {
+            contact.disabled = true;
+            return;
+        }
 
         // *********** Grounds and Walls has to come from different rigid body ************** //
 
@@ -171,6 +183,7 @@ export default class Player extends cc.Component {
         // Touch the ground
         if ((other.tag == 0||other.tag ==2) && Manifold.normal.y == -1){
             this.on_ground = true;
+            this.is_Jumping = false;
         }
     }
 
@@ -206,8 +219,11 @@ export default class Player extends cc.Component {
     }
 
     movingUpdate(dt){
+        let rotation = Math.abs(this.node.getComponent(cc.RigidBody).getWorldRotation() % 360);
         if(this.is_Dead) return;
         this.node.x += this.current_speed * dt;
+
+
         if((this.current_speed == 0 && this.on_ground) || this.is_hidden) this.streak.stopSystem();
         if (this.node.y < -250)  this.is_underfloor = true;
         else this.is_underfloor = false;
