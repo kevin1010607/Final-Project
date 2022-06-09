@@ -26,12 +26,14 @@ export default class Hammer extends cc.Component {
     }
 
     start() {
+        let player = cc.find("Canvas/player").getComponent("Player");
         this.action = cc.sequence(cc.moveBy(1, 0, 125), cc.moveBy(0.2, 0, -125));
         var move_callback = function(){
             this.node.runAction(this.action);
             this.scheduleOnce(audio_callback, 1.2);
         };
         var audio_callback = function(){
+            if(player.is_Dead) return;
             this.hammer_audioID = cc.audioEngine.playEffect(this.hammer, false);
             cc.audioEngine.setVolume(this.hammer_audioID, this.volumn);
         }

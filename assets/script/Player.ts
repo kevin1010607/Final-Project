@@ -223,6 +223,8 @@ export default class Player extends cc.Component {
         if(this.is_Dead) return;
         this.node.x += this.current_speed * dt;
 
+        if (this.current_speed == this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = 500;
+        else if (this.current_speed == -this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = -500;
 
         if((this.current_speed == 0 && this.on_ground) || this.is_hidden) this.streak.stopSystem();
         if (this.node.y < -250)  this.is_underfloor = true;

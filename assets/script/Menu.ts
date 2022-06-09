@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const { ccclass, property } = cc._decorator;
+declare const firebase: any
 
 @ccclass
 export default class Menu extends cc.Component {
@@ -25,6 +26,7 @@ export default class Menu extends cc.Component {
     loadGame() {
         let action = cc.sequence(cc.moveBy(0.4, 225, 0), cc.moveBy(0.4, 225, 0));
         this.board.node.runAction(action);
+        cc.audioEngine.stopMusic();
         //cc.director.loadScene("logIn");
     }
 
@@ -43,13 +45,13 @@ export default class Menu extends cc.Component {
     }
 
     loadUserData() {
-        // console.log(firebase.auth().currentUser.email);
-        var email = firebase.auth().currentUser.email;
+        let user = firebase.auth().currentUser.email;
+        let email = user.email;
+        let uid = user.uid;
         this.userName = email.substr(0, email.indexOf('@'));
-        console.log(firebase.auth().currentUser);
         var THIS = this;
         var CC = cc;
-        firebase.database().ref('user/' + this.userName).once('value').then((snapshot) => {
+        firebase.database().ref('user/' + uid).once('value').then((snapshot) => {
             THIS.highScore = Number(snapshot.val().score);
             THIS.score.getComponent(cc.Label).string = THIS.highScore.toString();
         });

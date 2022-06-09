@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const { ccclass, property } = cc._decorator;
+declare const firebase: any
 
 @ccclass
 export default class Main extends cc.Component {
@@ -30,6 +31,9 @@ export default class Main extends cc.Component {
 
     @property(cc.EditBox)
     passwordEditBoxLogIn: cc.EditBox = null;
+
+    @property(cc.AudioClip)
+    background_music: cc.AudioClip = null;
 
     loadSignUp() {
         let action = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
@@ -69,7 +73,7 @@ export default class Main extends cc.Component {
         firebase.auth().signInWithEmailAndPassword(Email, Password)
             .then(
                 function (error) {
-                    alert("成功登入\n");
+                    alert("Log in sucessfully\n");
                     CC.director.loadScene("menu");
                 }
             )
@@ -94,25 +98,25 @@ export default class Main extends cc.Component {
             THIS.boardSignUp.node.runAction(action);
             THIS.boardLogIn.node.runAction(action2);
             alert("Sign up successfully!");
-        })
-            .then(() => {
-                var user_name = Email.substr(0, Email.indexOf('@'));
-                var user_name = user_name.toLowerCase();
-                firebase.database().ref('user/' + user_name)
-                    .set({ name: user_name, email: Email, score: 0 });
 
-                // 
-                firebase.database().ref('leaderboard/' + user_name)
-                    .set({ name: user_name, highest_score: 0 });
-            })
-            .catch((e) => {
-                alert(e.message);
-            });
+        }).then(() => {
+            let user = firebase.auth().currentUser;
+            let uid = user.uid;
+            var user_name = Email.substr(0, Email.indexOf('@'));
+            user_name = user_name.toLowerCase();
+            firebase.database().ref('user/' + uid).set({name: user_name, email: Email, score: 0 });
+            firebase.database().ref('leaderboard/' + uid).set({ name: user_name, highest_score: 0 });
+
+        }).catch((e) => {
+            alert(e.message);
+        });
     }
 
     start() {
-        let action = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0));
+        let action = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0)).easing(cc.easeOut(1.5));
         this.board.node.runAction(action);
+        cc.audioEngine.playMusic(this.background_music, true);
+        cc.audioEngine.setMusicVolume(0.8);
 
         cc.find("Canvas/board/logIn").on(cc.Node.EventType.MOUSE_DOWN, () => {
             this.loadLogIn();

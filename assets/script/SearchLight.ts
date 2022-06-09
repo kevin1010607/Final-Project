@@ -32,6 +32,7 @@ export default class SearchLight extends cc.Component {
         this.light = this.node.getChildByName('light');
 
         let changeVolumeCallback = function(){
+            if (this.player.is_Dead) return;
             let camera = cc.find("Canvas/Main Camera");
             if (this.search_audioID != null){
                 if(cc.audioEngine.getState(this.search_audioID) == cc.audioEngine.AudioState.PLAYING){

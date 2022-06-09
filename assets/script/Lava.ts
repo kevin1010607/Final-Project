@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 const {ccclass, property} = cc._decorator;
+import Player from "./Player";
 
 @ccclass
 export default class Lava extends cc.Component {
@@ -22,7 +23,10 @@ export default class Lava extends cc.Component {
     // onLoad () {}
 
     start () {
+        let player = cc.find("Canvas/player").getComponent(Player);
+
         let changeVolumeCallback = function(){
+            if (player.is_Dead) return;
             let camera = cc.find("Canvas/Main Camera");
             if (this.lava_audioID != null){
                 if(cc.audioEngine.getState(this.lava_audioID) == cc.audioEngine.AudioState.PLAYING){
