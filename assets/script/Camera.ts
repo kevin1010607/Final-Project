@@ -15,7 +15,6 @@ export default class Camera extends cc.Component {
     // onLoad () {}
 
     start () {
-
     }
 
     update(dt){
@@ -25,5 +24,6 @@ export default class Camera extends cc.Component {
             cur_position.lerp(target_positon, 0.1, cur_position);
             this.node.setPosition(cur_position);
         }
+        if(cc.director.getScene().name == "example") this.node.y = 0;
     }
 }
