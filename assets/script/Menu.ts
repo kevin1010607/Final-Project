@@ -45,13 +45,15 @@ export default class Menu extends cc.Component {
     }
 
     loadUserData() {
-        let user = firebase.auth().currentUser.email;
+        let user = firebase.auth().currentUser;
         let email = user.email;
         let uid = user.uid;
-        this.userName = email.substr(0, email.indexOf('@'));
+        cc.log(email);
+        //this.userName = user.substr(0, email.indexOf('@'));
         var THIS = this;
         var CC = cc;
         firebase.database().ref('user/' + uid).once('value').then((snapshot) => {
+            console.log(snapshot.val());
             THIS.highScore = Number(snapshot.val().score);
             THIS.score.getComponent(cc.Label).string = THIS.highScore.toString();
         });
@@ -73,7 +75,7 @@ export default class Menu extends cc.Component {
             });
             CC.log(sorted.length);
             for (var i = 0; i < sorted.length; i++) {
-                CC.find("Canvas/leaderboard/name_" + String(i + 1)).getComponent(cc.Label).string = String(sorted[i].toUpperCase());
+                CC.find("Canvas/leaderboard/name_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].name.toUpperCase());
                 CC.find("Canvas/leaderboard/score_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].highest_score);
             }
 
