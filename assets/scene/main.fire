@@ -58,7 +58,7 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "autoReleaseAssets": false,
-    "_id": "4948e242-98a9-4453-ae28-028f5bba1e0c"
+    "_id": "160be2da-eb75-4a4f-a53a-8f4312e4ee2e"
   },
   {
     "__type__": "cc.Node",
@@ -463,9 +463,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 32,
-      "g": 32,
-      "b": 32,
+      "r": 105,
+      "g": 105,
+      "b": 105,
       "a": 255
     },
     "_contentSize": {
