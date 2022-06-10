@@ -133,7 +133,7 @@ export default class GameManager extends cc.Component {
         menu_event.component = "GameManager";
         menu_event.handler = "gameQuit";
         this.menu_btn.clickEvents.push(menu_event);
-        this.game_over_scene.getChildByName("menu_btn").getComponent(cc.Button).clickEvents.push(restart_event);
+        this.game_over_scene.getChildByName("menu_btn").getComponent(cc.Button).clickEvents.push(menu_event);
 
         let fade_out = function(){
             cc.audioEngine.setVolume(this.audioID, num);
