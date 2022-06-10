@@ -35,33 +35,34 @@ export default class Main extends cc.Component {
     @property(cc.AudioClip)
     background_music: cc.AudioClip = null;
 
+    moving_distance: number = 230;
+
     loadSignUp() {
-        let action = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
+        let action = cc.sequence(cc.moveBy(0.4, this.moving_distance + 50, 0), cc.moveBy(0.4, this.moving_distance + 50, 0));
         this.board.node.runAction(action);
-        let action2 = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0));
+        let action2 = cc.sequence(cc.moveBy(0.4, -this.moving_distance, 0), cc.moveBy(0.4, -this.moving_distance, 0));
         this.boardSignUp.node.runAction(action2);
 
         // cc.director.loadScene("signUp");
     }
 
     loadLogIn() {
-        let action = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
+        let action = cc.sequence(cc.moveBy(0.4, this.moving_distance + 50, 0), cc.moveBy(0.4, this.moving_distance + 50, 0));
         this.board.node.runAction(action);
-        let action2 = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0));
+        let action2 = cc.sequence(cc.moveBy(0.4, -this.moving_distance, 0), cc.moveBy(0.4, -this.moving_distance, 0));
         this.boardLogIn.node.runAction(action2);
         //cc.director.loadScene("logIn");
     }
 
     //返回首頁
     loadboard(who: number) {
-        cc.log(this.board.node.position.x);
-        let action = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0));
+        let action = cc.sequence(cc.moveBy(0.4, -this.moving_distance - 50, 0), cc.moveBy(0.4, -this.moving_distance - 50, 0));
         this.board.node.runAction(action);
         if (who == 0) {
-            let action2 = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
+            let action2 = cc.sequence(cc.moveBy(0.4, this.moving_distance, 0), cc.moveBy(0.4, this.moving_distance, 0));
             this.boardSignUp.node.runAction(action2);
         } else {
-            let action2 = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
+            let action2 = cc.sequence(cc.moveBy(0.4, this.moving_distance, 0), cc.moveBy(0.4, this.moving_distance, 0));
             this.boardLogIn.node.runAction(action2);
         }
     }
@@ -86,8 +87,8 @@ export default class Main extends cc.Component {
     }
 
     signUP() {
-        let action = cc.sequence(cc.moveBy(0.4, 350, 0), cc.moveBy(0.4, 350, 0));
-        let action2 = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0));
+        let action = cc.sequence(cc.moveBy(0.4, this.moving_distance, 0), cc.moveBy(0.4, this.moving_distance, 0));
+        let action2 = cc.sequence(cc.moveBy(0.4, -this.moving_distance, 0), cc.moveBy(0.4, -this.moving_distance, 0));
         var Email = this.emailEditBoxSignUp.string;
         let Password = this.passwordEditBoxSignUp.string;
         let THIS = this;
@@ -113,7 +114,7 @@ export default class Main extends cc.Component {
     }
 
     start() {
-        let action = cc.sequence(cc.moveBy(0.4, -350, 0), cc.moveBy(0.4, -350, 0)).easing(cc.easeOut(1.5));
+        let action = cc.sequence(cc.moveBy(0.4, -this.moving_distance - 20, 0), cc.moveBy(0.4, -this.moving_distance - 20, 0)).easing(cc.easeOut(1.5));
         this.board.node.runAction(action);
         cc.audioEngine.playMusic(this.background_music, true);
         cc.audioEngine.setMusicVolume(0.8);
