@@ -45,7 +45,7 @@ export default class Menu extends cc.Component {
     }
 
     loadUserData() {
-        let user = firebase.auth().currentUser.email;
+        let user = firebase.auth().currentUser;
         let email = user.email;
         let uid = user.uid;
         this.userName = email.substr(0, email.indexOf('@'));
