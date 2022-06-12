@@ -20,10 +20,17 @@ export default class Box extends cc.Component {
 
     update (dt) {
         if(this.node.y < this.underworld_bound){
-            this.getComponent(cc.RigidBody).gravityScale = -8;
+            this.getComponent(cc.RigidBody).gravityScale = -5;
         }
         else{
-            this.getComponent(cc.RigidBody).gravityScale = 10;
+            this.getComponent(cc.RigidBody).gravityScale = 5;
+        }
+    }
+
+    onBeginContact(contact, self, other){
+        if (other.node.name == "static_spike1" || other.node.name == "static_spike2" || other.node.name == "static_spike3"){
+            contact.disabled = true;
+            return;
         }
     }
 }

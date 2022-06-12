@@ -14,6 +14,11 @@ export default class SearchLight extends cc.Component {
 
     private light: cc.Node = null;
 
+    @property(cc.Prefab)
+    private missilePrefab: cc.Prefab = null;
+    private missile_is_ready: boolean = true;
+    private missile_interval: number = 1.5;
+
     @property(Player)
     player: Player = null;
 
@@ -93,8 +98,9 @@ export default class SearchLight extends cc.Component {
 
     detectPlayer(){
         let x = this.player.node.x;
-        let y = this.player.node.y;   
-        if (this.detectInLight(x, y) && !this.player.is_hidden) this.player.playerDead();
+        let y = this.player.node.y;
+        
+        if (this.detectInLight(x, y) && !this.player.is_hidden && this.missile_is_ready) this.createMissle();
     }
 
     detectInRange(){
@@ -109,5 +115,22 @@ export default class SearchLight extends cc.Component {
         else if (distance <= 1100) this.volume = 0.3;
         else if (distance <= 1200) this.volume = 0.25;
         else this.volume = 0;
+    }
+
+    createMissle(){
+        this.missile_is_ready = false;
+        //let bullet = null;
+        this.scheduleOnce(() => {
+            this.missile_is_ready = true;
+        }, this.missile_interval);
+
+        let missile = cc.instantiate(this.missilePrefab);
+        let x = this.node.x;
+        let y =  this.node.y - 60;
+        missile.setPosition(x, y);
+        missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 0.9; // set velocity
+        missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 0.9; // set velocity
+        console.log(missile.getComponent(cc.RigidBody).linearVelocity.x, missile.getComponent(cc.RigidBody).linearVelocity.y);
+        cc.find("Canvas").addChild(missile);
     }
 }

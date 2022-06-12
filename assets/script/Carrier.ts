@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Blade extends cc.Component {
+export default class Carrier extends cc.Component {
 
     @property
     move_amount: number = 200;
@@ -20,16 +20,16 @@ export default class Blade extends cc.Component {
 
     start () {
         var action1 = cc.repeatForever(cc.sequence(cc.moveBy(this.move_interval, -this.move_amount, 0), cc.delayTime(1), cc.moveBy(this.move_interval, this.move_amount, 0), cc.delayTime(1)));
-        var action2 = cc.repeatForever(cc.rotateBy(1,270));
         this.node.runAction(action1);
-        this.node.runAction(action2);
 
     }
 
-    onBeginContact(contact, selfCollider, otherCollider) {
-        if(otherCollider.node.name == "player"){
-            otherCollider.node.getComponent("Player").playerDead();
+    onPreSolve(contact, self, other){
+        if(other.node.name == "player"){
+            other.node.getComponent(cc.RigidBody).linearVelocity = cc.v2(this.node.getComponent(cc.RigidBody).linearVelocity, 0);
+          }
         }
-    }
+      }
+
     // update (dt) {}
-}
+

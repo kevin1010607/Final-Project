@@ -408,6 +408,9 @@
       "__id__": 1
     },
     "_enabled": true,
+    "missilePrefab": {
+      "__uuid__": "9dd15813-e1bc-4e96-aaec-e188c3500132"
+    },
     "player": null,
     "search": {
       "__uuid__": "83e2ace8-aaef-44b8-97a3-8241b0bbac3e"
