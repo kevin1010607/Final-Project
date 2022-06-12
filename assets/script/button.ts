@@ -29,7 +29,6 @@ export default class Button extends cc.Component {
     }
 
     onBeginContact(contact, self, other){
-        console.log(contact.getWorldManifold().normal.x, contact.getWorldManifold().normal.y);
         if(other.node.name == "player" || other.node.name == "box"){ // contact.getWorldManifold().normal.x == 0 有時會按不到按鈕
             if(this.is_push == true){
                 return;

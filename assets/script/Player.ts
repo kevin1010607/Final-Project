@@ -205,7 +205,7 @@ export default class Player extends cc.Component {
     turnLeft(){
         if(this.is_Dead) return;
         if(this.streak.stopped && !this.is_hidden) this.streak.resetSystem();
-        if(this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = -500;
+        if(this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = -600;
         this.current_speed = -this.moving_speed;
         this.streak.gravity.x = -this.streak_gravity;
     }
@@ -213,7 +213,7 @@ export default class Player extends cc.Component {
     turnRight(){
         if(this.is_Dead) return;
         if(this.streak.stopped && !this.is_hidden) this.streak.resetSystem();
-        if(this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = 500;
+        if(this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = 600;
         this.current_speed = this.moving_speed;
         this.streak.gravity.x = this.streak_gravity;
     }
@@ -223,8 +223,8 @@ export default class Player extends cc.Component {
         if(this.is_Dead) return;
         this.node.x += this.current_speed * dt;
 
-        if (this.current_speed == this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = 500;
-        else if (this.current_speed == -this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = -500;
+        if (this.current_speed == this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = 600;
+        else if (this.current_speed == -this.moving_speed && this.is_Jumping) this.getComponent(cc.RigidBody).angularVelocity  = -600;
 
         if((this.current_speed == 0 && this.on_ground) || this.is_hidden) this.streak.stopSystem();
         if (this.node.y < -250)  this.is_underfloor = true;
@@ -246,8 +246,8 @@ export default class Player extends cc.Component {
             this.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, this.jumping_speed);
         }
 
-        if (this.current_speed == this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = 500;
-        else if (this.current_speed == -this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = -500;
+        if (this.current_speed == this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = 600;
+        else if (this.current_speed == -this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = -600;
     }
 
     /*
