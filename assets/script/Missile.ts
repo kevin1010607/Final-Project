@@ -8,28 +8,27 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Blade extends cc.Component {
+export default class Missile extends cc.Component {
 
-    @property
-    move_amount: number = 200;
-    @property
-    move_interval: number = 0.5;
+    @property(cc.Prefab)
+    private exp_particle: cc.Prefab = null;
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start () {
-        var action1 = cc.repeatForever(cc.sequence(cc.moveBy(this.move_interval, -this.move_amount, 0), cc.delayTime(1), cc.moveBy(this.move_interval, this.move_amount, 0), cc.delayTime(1)));
-        var action2 = cc.repeatForever(cc.rotateBy(1,270));
-        this.node.runAction(action1);
-        this.node.runAction(action2);
 
     }
 
+    // update (dt) {}
+
     onBeginContact(contact, selfCollider, otherCollider) {
+        let exp = cc.instantiate(this.exp_particle);
+        exp.setPosition(this.node.position);
+        cc.find("Canvas").addChild(exp);
         if(otherCollider.node.name == "player"){
             otherCollider.node.getComponent("Player").playerDead();
         }
+        this.node.destroy();
     }
-    // update (dt) {}
 }

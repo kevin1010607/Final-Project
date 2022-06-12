@@ -24,6 +24,6 @@ export default class Camera extends cc.Component {
             cur_position.lerp(target_positon, 0.1, cur_position);
             this.node.setPosition(cur_position);
         }
-        if(cc.director.getScene().name == "example") this.node.y = 0;
+        // if(cc.director.getScene().name == "example" || cc.director.getScene().name == "normal_01" || cc.director.getScene().name == "normal_02"|| cc.director.getScene().name == "normal_03"|| cc.director.getScene().name == "normal_endless") this.node.y = 0;
     }
 }
