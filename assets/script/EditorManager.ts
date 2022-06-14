@@ -4,6 +4,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+import Player from "./Player";
 
 const {ccclass, property} = cc._decorator;
 
@@ -58,16 +59,16 @@ export default class EditorManager extends cc.Component {
 
     start () {
         this.playBGM();
-        cc.find("Canvas/background").on(cc.Node.EventType.MOUSE_DOWN, this.placeObject, this);
-        cc.find("Canvas/underworld").on(cc.Node.EventType.MOUSE_DOWN, this.placeObject, this);
+        cc.find("Canvas/background").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);
+        cc.find("Canvas/underworld").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);
         cc.find("Canvas").on(cc.Node.EventType.MOUSE_MOVE, this.updateMousePosition, this);
 
         let w = cc.find("Canvas/ground/wall");
         let f = cc.find("Canvas/ground/floor");
-        w.on(cc.Node.EventType.MOUSE_DOWN, () => {this.changeToDrag(w);});
-        f.on(cc.Node.EventType.MOUSE_DOWN, () => {this.changeToDrag(f);});
+        w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
+        f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
 
-        for(let x = -970, y = -216.25; x < this.right_boundary; x += 60){
+        for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
             let boundary = cc.instantiate(this.boundary);
             boundary.setPosition(x, y);
             this.boundary_node.addChild(boundary);
@@ -81,12 +82,16 @@ export default class EditorManager extends cc.Component {
 
     handleTestOrStopBtn(){
         if(this.is_drag) return;
-        let label: cc.Label = this.camera.getChildByName("test_or_stop").getChildByName("Background").getChildByName("Label").getComponent(cc.Label);
+        let label: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
         if(this.is_test){
             // stop the test
             this.is_test = false;
             label.string = "test";
-            cc.find("Canvas").getChildByName("player").destroy();
+            let player = cc.find("Canvas").getChildByName("player");
+            player.getComponent(Player).playerDead();
+            this.scheduleOnce(() => {
+                player.destroy();
+            }, 0.6);
         }
         else{
             // start the test
@@ -98,7 +103,7 @@ export default class EditorManager extends cc.Component {
     }
 
     handleBtn(event, prefab_name){
-        if(this.is_drag || this.is_test) return;
+        if(this.is_drag) return;
 
         let object: cc.Node;
         if(prefab_name == "floor"){
@@ -113,29 +118,55 @@ export default class EditorManager extends cc.Component {
             return;
         }
         object.opacity = 180;
-        object.on(cc.Node.EventType.MOUSE_DOWN, () => {this.changeToDrag(object);});
+        object.getComponent(cc.RigidBody).active = false;
+        object.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, object);});
         this.drag_object = object;
         this.scheduleOnce(() => {
             this.is_drag = true;
         }, 0.01);
     }
 
-    placeObject(){
+    placeOrCancelObject(event){
         if(!this.is_drag) return;
-        this.drag_object.opacity = 255;
-        this.drag_object = null;
-        this.scheduleOnce(() => {
-            this.is_drag = false;
-        }, 0.01);
+        // left button
+        if(event.getButton() == 0){
+            this.drag_object.opacity = 255;
+            this.drag_object.getComponent(cc.RigidBody).active = true;
+            this.drag_object = null;
+            this.scheduleOnce(() => {
+                this.is_drag = false;
+            }, 0.01);
+        }
+        // right butoon
+        else if(event.getButton() == 2){
+            let ans: boolean = confirm("Do you want to delete this object?");
+            if(ans){
+                this.drag_object.destroy();
+                this.drag_object = null;
+                this.scheduleOnce(() => {
+                    this.is_drag = false;
+                }, 0.01);
+            }
+        }
     }
 
-    changeToDrag(node: cc.Node){
+    changeToDragOrCancel(event, node: cc.Node){
+        console.log(event);
         if(this.is_drag) return;
-        this.drag_object = node;
-        this.drag_object.opacity = 180;
-        this.scheduleOnce(() => {
-            this.is_drag = true;
-        }, 0.01);
+        // left button
+        if(event.getButton() == 0){
+            this.drag_object = node;
+            this.drag_object.opacity = 180;
+            this.drag_object.getComponent(cc.RigidBody).active = false;
+            this.scheduleOnce(() => {
+                this.is_drag = true;
+            }, 0.01);
+        }
+        // right button
+        else if(event.getButton() == 2){
+            let ans: boolean = confirm("Do you want to delete this object?");
+            if(ans) node.destroy();
+        }
     }
 
     updateDrag(){
