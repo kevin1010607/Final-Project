@@ -36,5 +36,6 @@
       "enable": false
     }
   },
-  "last-module-event-record-time": 1654770226812
+  "last-module-event-record-time": 1654770226812,
+  "start-scene": "current"
 }
