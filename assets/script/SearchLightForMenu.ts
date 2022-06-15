@@ -58,7 +58,7 @@ export default class SearchLightForMenu extends cc.Component {
     }
 
     update(dt) {
-        this.detectPlayer();
+        //this.detectPlayer();
         this.detectInRange();
     }
 
@@ -96,12 +96,12 @@ export default class SearchLightForMenu extends cc.Component {
         return false;
     }
 
-    detectPlayer() {
-        let x = this.player.node.x;
-        let y = this.player.node.y;
+    // detectPlayer() {
+    //     let x = this.player.node.x;
+    //     let y = this.player.node.y;
 
-        if (this.detectInLight(x, y) && !this.player.is_hidden && this.missile_is_ready) this.createMissle();
-    }
+    //     if (this.detectInLight(x, y) && !this.player.is_hidden && this.missile_is_ready) this.createMissle();
+    // }
 
     detectInRange() {
         let camera = cc.find("Canvas/Main Camera");

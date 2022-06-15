@@ -82,6 +82,7 @@ export default class Main extends cc.Component {
                 function (error) {
                     alert("Log in sucessfully\n");
                     CC.director.loadScene("menu");
+                    //CC.audioEngine.stopMusic();
                 }
             )
             .catch(

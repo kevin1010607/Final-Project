@@ -332,7 +332,6 @@ export default class Menu extends cc.Component {
         this.endlessButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
             cc.audioEngine.playEffect(this.button_effect, false);
             cc.director.loadScene("underworld_endless");
-            cc.audioEngine.stopMusic();
         }, this);
         this.cancelButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
             cc.audioEngine.playEffect(this.button2_effect, false);
