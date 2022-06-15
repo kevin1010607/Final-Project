@@ -5,6 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 import Player from "./Player";
+import SearchLight from "./SearchLight";
 
 const {ccclass, property} = cc._decorator;
 
@@ -21,21 +22,28 @@ export default class EditorManager extends cc.Component {
     @property(cc.Node)
     boundary_node: cc.Node = null;
 
+    // prefab
     @property(cc.Prefab)
-    player: cc.Prefab = null;
+    player_prefab: cc.Prefab = null;
     @property(cc.Prefab)
-    boundary: cc.Prefab = null;
+    boundary_prefab: cc.Prefab = null;
     @property(cc.Prefab)
-    floor: cc.Prefab = null;
+    floor_prefab: cc.Prefab = null;
     @property(cc.Prefab)
-    wall: cc.Prefab = null;
+    wall_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    search_light_prefab: cc.Prefab = null;
 
+    // enemies
+    private player: cc.Node = null;
 
+    // keyboard
     private left_pressed: boolean = false;
     private right_pressed: boolean = false;
     private up_pressed: boolean = false;
     private down_pressed: boolean = false;
 
+    // background boundary
     private left_boundary: number = -1000;
     private right_boundary: number = 17000;
     private up_boundary: number = 980;
@@ -45,6 +53,8 @@ export default class EditorManager extends cc.Component {
     private is_drag: boolean = false;
     private mouse_x: number = 0;
     private mouse_y: number = 0;
+    private cold_time: number = 0.5;
+    private remaining_time: number = 0;
 
     private drag_object: cc.Node = null;
 
@@ -69,7 +79,7 @@ export default class EditorManager extends cc.Component {
         f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
 
         for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
-            let boundary = cc.instantiate(this.boundary);
+            let boundary = cc.instantiate(this.boundary_prefab);
             boundary.setPosition(x, y);
             this.boundary_node.addChild(boundary);
         }
@@ -78,27 +88,30 @@ export default class EditorManager extends cc.Component {
     update (dt) {
         this.cameraFollow();
         this.updateDrag();
+        this.updateColdTime(dt);
     }
 
     handleTestOrStopBtn(){
-        if(this.is_drag) return;
+        if(this.is_drag || this.remaining_time != 0) return;
+        this.remaining_time = this.cold_time;
         let label: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
         if(this.is_test){
             // stop the test
             this.is_test = false;
             label.string = "test";
-            let player = cc.find("Canvas").getChildByName("player");
-            player.getComponent(Player).playerDead();
+            this.player.getComponent(Player).playerDead();
             this.scheduleOnce(() => {
-                player.destroy();
+                this.player.destroy();
             }, 0.6);
+            this.changeEnemyScript(false);
         }
         else{
             // start the test
             this.is_test = true;
             label.string = "stop";
-            let player = cc.instantiate(this.player);
-            cc.find("Canvas").addChild(player);
+            this.player = cc.instantiate(this.player_prefab);
+            cc.find("Canvas").addChild(this.player);
+            this.changeEnemyScript(true);
         }
     }
 
@@ -107,18 +120,25 @@ export default class EditorManager extends cc.Component {
 
         let object: cc.Node;
         if(prefab_name == "floor"){
-            object = cc.instantiate(this.floor);
+            object = cc.instantiate(this.floor_prefab);
             cc.find("Canvas/ground").addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "wall"){
-            object = cc.instantiate(this.wall);
+            object = cc.instantiate(this.wall_prefab);
             cc.find("Canvas/ground").addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "light" && !this.is_test){
+            object = cc.instantiate(this.search_light_prefab);
+            object.getComponent(SearchLight).enabled = false;
+            cc.find("Canvas/enemies/search_lights").addChild(object);
         }
         else{
             return;
         }
+
         object.opacity = 180;
-        object.getComponent(cc.RigidBody).active = false;
         object.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, object);});
         this.drag_object = object;
         this.scheduleOnce(() => {
@@ -131,7 +151,11 @@ export default class EditorManager extends cc.Component {
         // left button
         if(event.getButton() == 0){
             this.drag_object.opacity = 255;
-            this.drag_object.getComponent(cc.RigidBody).active = true;
+
+            // floor or wall
+            let rigid_body = this.drag_object.getComponent(cc.RigidBody);
+            if(rigid_body) rigid_body.active = true;
+
             this.drag_object = null;
             this.scheduleOnce(() => {
                 this.is_drag = false;
@@ -151,13 +175,16 @@ export default class EditorManager extends cc.Component {
     }
 
     changeToDragOrCancel(event, node: cc.Node){
-        console.log(event);
         if(this.is_drag) return;
         // left button
         if(event.getButton() == 0){
             this.drag_object = node;
             this.drag_object.opacity = 180;
-            this.drag_object.getComponent(cc.RigidBody).active = false;
+            
+            // floor or wall
+            let rigid_body = this.drag_object.getComponent(cc.RigidBody);
+            if(rigid_body) rigid_body.active = true;
+
             this.scheduleOnce(() => {
                 this.is_drag = true;
             }, 0.01);
@@ -167,6 +194,31 @@ export default class EditorManager extends cc.Component {
             let ans: boolean = confirm("Do you want to delete this object?");
             if(ans) node.destroy();
         }
+    }
+
+    changeEnemyScript(enabled: boolean){
+        // Search light
+        let search_light_parent_node: cc.Node = cc.find("Canvas/enemies/search_lights");
+        let search_light_scripts: SearchLight[] = search_light_parent_node.getComponentsInChildren(SearchLight);
+        search_light_scripts.forEach((i) => {
+            if(enabled){
+                i.enabled = true;
+                i.node.stopAllActions();
+                let d = Math.random()*200+500, sec = Math.random()*2+2, dir = Math.random()<0.5?1:-1;
+                i.node.runAction(cc.sequence(cc.moveBy(sec, dir*d, 0), cc.moveBy(sec, -dir*d, 0)).repeatForever());
+                i.player = this.player.getComponent(Player);
+            }
+            else{
+                i.node.setPosition(i.pos_x, i.pos_y);
+                i.enabled = false;
+                i.node.stopAllActions();
+                i.player = null;
+            }
+        });
+    }
+
+    updateColdTime(dt){
+        this.remaining_time = Math.max(0, this.remaining_time-dt);
     }
 
     updateDrag(){
@@ -216,10 +268,10 @@ export default class EditorManager extends cc.Component {
     cameraFollow(){
         if(this.is_test) return;
 
-        if(this.left_pressed) this.camera.x -= 20;
-        if(this.right_pressed) this.camera.x += 20;
-        if(this.up_pressed) this.camera.y += 20;
-        if(this.down_pressed) this.camera.y -= 20;
+        if(this.left_pressed) this.camera.x -= 40;
+        if(this.right_pressed) this.camera.x += 40;
+        if(this.up_pressed) this.camera.y += 40;
+        if(this.down_pressed) this.camera.y -= 40;
 
         if(this.camera.x < this.left_boundary+this.canvas.designResolution.width/2) 
             this.camera.x = this.left_boundary+this.canvas.designResolution.width/2;
