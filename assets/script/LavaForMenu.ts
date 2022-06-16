@@ -15,7 +15,7 @@ export default class LavaForMenu extends cc.Component {
     lava_effect: cc.AudioClip = null;
 
     lava_audioID: number = null;
-    volume: number = 0.15;
+    volume: number = 0.25;
     in_range: boolean = false;
 
     // LIFE-CYCLE CALLBACKS:
@@ -60,7 +60,7 @@ export default class LavaForMenu extends cc.Component {
         // else if (distance <= 750) this.volume = 0.28;
         // else if (distance <= 800) this.volume = 0.25;
         // else this.volume = 0;
-        this.volume = 0.15;
+        this.volume = 0.25;
     }
 
     onBeginContact(contact, self, other) {
