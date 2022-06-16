@@ -15,7 +15,7 @@ export default class SearchLight extends cc.Component {
     private light: cc.Node = null;
 
     @property(cc.Prefab)
-    private missilePrefab: cc.Prefab = null;
+    missilePrefab: cc.Prefab = null;
     private missile_is_ready: boolean = true;
     private missile_interval: number = 1.5;
 
@@ -30,6 +30,7 @@ export default class SearchLight extends cc.Component {
     volume: number = 0;
     search_audioID: number = null;
 
+    // for editor
     pos_x: number = 0;
     pos_y: number = 0;
 
@@ -69,9 +70,6 @@ export default class SearchLight extends cc.Component {
     }
 
     move(){
-        // for editor
-        if(cc.director.getScene().name == "editor") return;
-
         let action: cc.Action = cc.sequence(cc.moveBy(3, 600, 0), cc.moveBy(3, -600, 0)).repeatForever();
         this.node.runAction(action);
     }

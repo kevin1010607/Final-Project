@@ -14,10 +14,15 @@ export default class StaticSpike extends cc.Component {
     @property
     direction: number = 1;
 
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
+
     // onLoad () {}
 
     start () {
-
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
     }
     // update (dt) {}
 

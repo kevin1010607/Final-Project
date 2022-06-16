@@ -6,6 +6,14 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 import Player from "./Player";
 import SearchLight from "./SearchLight";
+import Launcher from "./Launcher";
+import Hammer from "./Hammer";
+import Blade from "./Blade";
+import Lava from "./Lava";
+import Box from "./Box";
+import Fake from "./Fake";
+import DynamicSpike from "./DynamicSpike";
+import StaticSpike from "./StaticSpike";
 
 const {ccclass, property} = cc._decorator;
 
@@ -33,8 +41,63 @@ export default class EditorManager extends cc.Component {
     wall_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     search_light_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    launcher_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    hammer_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    blade_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    lava_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    box_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    fake_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    spike1_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    spike2_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    spike3_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    spike4_prefab: cc.Prefab = null;
 
-    // enemies
+    // search light property
+    @property(cc.Prefab)
+    missile_prefab: cc.Prefab = null;
+    @property(cc.AudioClip)
+    search_audioclip: cc.AudioClip = null;
+    // launcher property
+    @property(cc.Prefab)
+    bullet_prefab: cc.Prefab = null;
+    // hammer property
+    @property(cc.AudioClip)
+    hammer_audioclip: cc.AudioClip = null;
+    // lava property
+    @property(cc.AudioClip)
+    lava_effect_audioclip: cc.AudioClip = null;
+    // fake property
+    @property(cc.Prefab)
+    broken_particle_prefab: cc.Prefab = null;
+    // spike1 property
+    @property(cc.AudioClip)
+    spike_up_audioclip: cc.AudioClip = null;
+    @property(cc.AudioClip)
+    spike_down_audioclip: cc.AudioClip = null;
+
+    // enemies node
+    private search_light_parent_node: cc.Node = null;
+    private launcher_parent_node: cc.Node = null;
+    private hammer_parent_node: cc.Node = null;
+    private blade_parent_node: cc.Node = null;
+    private lava_parent_node: cc.Node = null;
+    private box_parent_node: cc.Node = null;
+    private fake_parent_node: cc.Node = null;
+    private spike1_parent_node: cc.Node = null;
+    private spike2_parent_node: cc.Node = null;
+    private spike3_parent_node: cc.Node = null;
+    private spike4_parent_node: cc.Node = null;
+
     private player: cc.Node = null;
 
     // keyboard
@@ -53,7 +116,7 @@ export default class EditorManager extends cc.Component {
     private is_drag: boolean = false;
     private mouse_x: number = 0;
     private mouse_y: number = 0;
-    private cold_time: number = 0.5;
+    private cold_time: number = 1;
     private remaining_time: number = 0;
 
     private drag_object: cc.Node = null;
@@ -72,6 +135,8 @@ export default class EditorManager extends cc.Component {
         cc.find("Canvas/background").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);
         cc.find("Canvas/underworld").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);
         cc.find("Canvas").on(cc.Node.EventType.MOUSE_MOVE, this.updateMousePosition, this);
+
+        this.bindingParentNode();
 
         let w = cc.find("Canvas/ground/wall");
         let f = cc.find("Canvas/ground/floor");
@@ -92,7 +157,7 @@ export default class EditorManager extends cc.Component {
     }
 
     handleTestOrStopBtn(){
-        if(this.is_drag || this.remaining_time != 0) return;
+        if(this.is_drag || this.remaining_time > 0.1) return;
         this.remaining_time = this.cold_time;
         let label: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
         if(this.is_test){
@@ -103,7 +168,7 @@ export default class EditorManager extends cc.Component {
             this.scheduleOnce(() => {
                 this.player.destroy();
             }, 0.6);
-            this.changeEnemyScript(false);
+            this.toggleAllEnemyScript(false);
         }
         else{
             // start the test
@@ -111,7 +176,7 @@ export default class EditorManager extends cc.Component {
             label.string = "stop";
             this.player = cc.instantiate(this.player_prefab);
             cc.find("Canvas").addChild(this.player);
-            this.changeEnemyScript(true);
+            this.toggleAllEnemyScript(true);
         }
     }
 
@@ -131,8 +196,70 @@ export default class EditorManager extends cc.Component {
         }
         else if(prefab_name == "light" && !this.is_test){
             object = cc.instantiate(this.search_light_prefab);
-            object.getComponent(SearchLight).enabled = false;
-            cc.find("Canvas/enemies/search_lights").addChild(object);
+            object.getComponent(SearchLight).destroy();
+            this.search_light_parent_node.addChild(object);
+        }
+        else if(prefab_name == "launcher" && !this.is_test){
+            object = cc.instantiate(this.launcher_prefab);
+            object.getComponent(Launcher).destroy();
+            this.launcher_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "hammer" && !this.is_test){
+            object = cc.instantiate(this.hammer_prefab);
+            object.getComponent(Hammer).destroy();
+            this.hammer_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "blade" && !this.is_test){
+            object = cc.instantiate(this.blade_prefab);
+            object.getComponent(Blade).destroy();
+            this.blade_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "lava" && !this.is_test){
+            object = cc.instantiate(this.lava_prefab);
+            object.getComponent(Lava).destroy();
+            this.lava_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "box" && !this.is_test){
+            object = cc.instantiate(this.box_prefab);
+            object.getComponent(Box).destroy();
+            this.box_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).type = cc.RigidBodyType.Kinematic;
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "fake" && !this.is_test){
+            object = cc.instantiate(this.fake_prefab);
+            object.getComponent(Fake).destroy();
+            this.fake_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "spike1" && !this.is_test){
+            object = cc.instantiate(this.spike1_prefab);
+            object.getComponent(DynamicSpike).destroy();
+            this.spike1_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "spike2" && !this.is_test){
+            object = cc.instantiate(this.spike2_prefab);
+            object.getComponent(StaticSpike).destroy();
+            this.spike2_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+        }
+        else if(prefab_name == "spike3" && !this.is_test){
+            object = cc.instantiate(this.spike3_prefab);
+            object.getComponent(StaticSpike).destroy();
+            this.spike3_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
+            object.rotation = 180;
+        }
+        else if(prefab_name == "spike4" && !this.is_test){
+            object = cc.instantiate(this.spike4_prefab);
+            object.getComponent(StaticSpike).destroy();
+            this.spike4_parent_node.addChild(object);
+            object.getComponent(cc.RigidBody).active = false;
         }
         else{
             return;
@@ -152,7 +279,6 @@ export default class EditorManager extends cc.Component {
         if(event.getButton() == 0){
             this.drag_object.opacity = 255;
 
-            // floor or wall
             let rigid_body = this.drag_object.getComponent(cc.RigidBody);
             if(rigid_body) rigid_body.active = true;
 
@@ -181,9 +307,8 @@ export default class EditorManager extends cc.Component {
             this.drag_object = node;
             this.drag_object.opacity = 180;
             
-            // floor or wall
             let rigid_body = this.drag_object.getComponent(cc.RigidBody);
-            if(rigid_body) rigid_body.active = true;
+            if(rigid_body) rigid_body.active = false;
 
             this.scheduleOnce(() => {
                 this.is_drag = true;
@@ -196,29 +321,212 @@ export default class EditorManager extends cc.Component {
         }
     }
 
-    changeEnemyScript(enabled: boolean){
+    toggleAllEnemyScript(enabled: boolean){
+        cc.audioEngine.stopAllEffects();
+        this.toggleSearchLightScript(enabled);
+        this.toggleLauncherScript(enabled);
+        this.toggleHammerScript(enabled);
+        this.toggleBladeScript(enabled);
+        this.toggleLavaScript(enabled);
+        this.toggleBoxScript(enabled);
+        this.toggleFakeScript(enabled);
+        this.toggleSpike1Script(enabled);
+        this.toggleSpike2Script(enabled);
+        this.toggleSpike3Script(enabled);
+        this.toggleSpike4Script(enabled);
+    }
+
+    toggleSearchLightScript(enabled: boolean){
         // Search light
-        let search_light_parent_node: cc.Node = cc.find("Canvas/enemies/search_lights");
-        let search_light_scripts: SearchLight[] = search_light_parent_node.getComponentsInChildren(SearchLight);
-        search_light_scripts.forEach((i) => {
+        this.search_light_parent_node.children.forEach((i) => {
             if(enabled){
-                i.enabled = true;
-                i.node.stopAllActions();
-                let d = Math.random()*200+500, sec = Math.random()*2+2, dir = Math.random()<0.5?1:-1;
-                i.node.runAction(cc.sequence(cc.moveBy(sec, dir*d, 0), cc.moveBy(sec, -dir*d, 0)).repeatForever());
-                i.player = this.player.getComponent(Player);
+                let cp = i.addComponent(SearchLight);
+                cp.missilePrefab = this.missile_prefab;
+                cp.player = this.player.getComponent(Player);
+                cp.search = this.search_audioclip;
             }
             else{
-                i.node.setPosition(i.pos_x, i.pos_y);
-                i.enabled = false;
-                i.node.stopAllActions();
-                i.player = null;
+                let cp = i.getComponent(SearchLight);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleLauncherScript(enabled: boolean){
+        // Launcher
+        this.launcher_parent_node.children.forEach((i) => {
+            if(i.name != "launcher") return;
+            if(enabled){
+                let cp = i.addComponent(Launcher);
+                cp.bulletPrefab = this.bullet_prefab;
+            }
+            else{
+                let cp = i.getComponent(Launcher);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleHammerScript(enabled: boolean){
+        // Hammer
+        this.hammer_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Hammer);
+                cp.hammer = this.hammer_audioclip;
+            }
+            else{
+                let cp = i.getComponent(Hammer);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleBladeScript(enabled: boolean){
+        // Blade
+        this.blade_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Blade);
+            }
+            else{
+                let cp = i.getComponent(Blade);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleLavaScript(enabled: boolean){
+        this.lava_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Lava);
+                cp.lava_effect = this.lava_effect_audioclip;
+            }
+            else{
+                let cp = i.getComponent(Lava);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleBoxScript(enabled: boolean){
+        this.box_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Box);
+                i.getComponent(cc.RigidBody).type = cc.RigidBodyType.Dynamic;
+            }
+            else{
+                i.getComponent(cc.RigidBody).type = cc.RigidBodyType.Kinematic;
+                i.getComponent(cc.RigidBody).linearVelocity = cc.v2(0, 0);
+                let cp = i.getComponent(Box);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleFakeScript(enabled: boolean){
+        this.fake_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Fake);
+                cp.broken_particle = this.broken_particle_prefab;
+            }
+            else{
+                i.getComponent(cc.Sprite).enabled = true;
+                i.getComponent(cc.RigidBody).active = true;
+                let cp = i.getComponent(Fake);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleSpike1Script(enabled: boolean){
+        this.spike1_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(DynamicSpike);
+                cp.spike_up = this.spike_up_audioclip;
+                cp.spike_down = this.spike_down_audioclip;
+            }
+            else{
+                let cp = i.getComponent(DynamicSpike);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleSpike2Script(enabled: boolean){
+        this.spike2_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(StaticSpike);
+                cp.direction = 1;
+            }
+            else{
+                let cp = i.getComponent(StaticSpike);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleSpike3Script(enabled: boolean){
+        this.spike3_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(StaticSpike);
+                cp.direction = 0;
+                i.rotation = 180;
+            }
+            else{
+                let cp = i.getComponent(StaticSpike);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleSpike4Script(enabled: boolean){
+        this.spike4_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(StaticSpike);
+                cp.direction = 1;
+            }
+            else{
+                let cp = i.getComponent(StaticSpike);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
             }
         });
     }
 
     updateColdTime(dt){
         this.remaining_time = Math.max(0, this.remaining_time-dt);
+        // console.log(this.remaining_time);
     }
 
     updateDrag(){
@@ -229,6 +537,21 @@ export default class EditorManager extends cc.Component {
     updateMousePosition(event){
         this.mouse_x = event.getLocation().x;
         this.mouse_y = event.getLocation().y;
+    }
+
+    bindingParentNode(){
+        let enemies_node = cc.find("Canvas/enemies");
+        this.search_light_parent_node = enemies_node.getChildByName("search_lights");
+        this.launcher_parent_node = enemies_node.getChildByName("launchers");
+        this.hammer_parent_node = enemies_node.getChildByName("hammers");
+        this.blade_parent_node = enemies_node.getChildByName("blades");
+        this.lava_parent_node = enemies_node.getChildByName("lavas");
+        this.box_parent_node = enemies_node.getChildByName("boxes");
+        this.fake_parent_node = enemies_node.getChildByName("fakes");
+        this.spike1_parent_node = enemies_node.getChildByName("spike1s");
+        this.spike2_parent_node = enemies_node.getChildByName("spike2s");
+        this.spike3_parent_node = enemies_node.getChildByName("spike3s");
+        this.spike4_parent_node = enemies_node.getChildByName("spike4s");
     }
 
     onKeyDown(event){

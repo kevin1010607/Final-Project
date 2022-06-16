@@ -21,24 +21,31 @@ export default class DynamicSpike extends cc.Component {
     action: cc.Action = null;
     volumn: number = 0;
 
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
+
     onLoad(){
         
     }
     
     start(){
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+
         let player = cc.find("Canvas/player").getComponent("Player");
         this.action = cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25));
         this.detectInRange();
 
         var moveup_callback = function(){
-            if (player.is_Dead) return;
+            if (player.is_Dead && cc.director.getScene().name != "editor") return;
             this.spikeup_audioID = cc.audioEngine.playEffect(this.spike_up, false);
             cc.audioEngine.setVolume(this.spikeup_audioID, this.volumn);
             this.node.runAction(this.action);
             this.scheduleOnce(movedown_callback, 1.7);
         };
         var movedown_callback = function(){
-            if (player.is_Dead) return;
+            if (player.is_Dead && cc.director.getScene().name != "editor") return;
             this.spikedown_audioID = cc.audioEngine.playEffect(this.spike_down, false);
             cc.audioEngine.setVolume(this.spikedown_audioID, this.volumn);
         };

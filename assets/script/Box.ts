@@ -11,11 +11,16 @@ const {ccclass, property} = cc._decorator;
 export default class Box extends cc.Component {
 
     underworld_bound: number = -190; // if player.y less than 190, anti-gravity
+
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
     
     // onLoad () {}
 
     start () {
-
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
     }
 
     update (dt) {

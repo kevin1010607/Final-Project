@@ -18,11 +18,18 @@ export default class Lava extends cc.Component {
     volume: number = 0;
     in_range: boolean = false;
 
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start () {
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+
         let player = cc.find("Canvas/player").getComponent(Player);
 
         let changeVolumeCallback = function(){

@@ -11,7 +11,7 @@ const { ccclass, property } = cc._decorator;
 export default class Launcher extends cc.Component {
 
     @property(cc.Prefab)
-    private bulletPrefab: cc.Prefab = null;
+    bulletPrefab: cc.Prefab = null;
 
     private canCreateBullet: boolean = true;
 
@@ -24,6 +24,10 @@ export default class Launcher extends cc.Component {
     private edgeX: number = 320; // 左到右的扇形面積
     private edgeY: number = 320; // 上到下的扇形面積
 
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
+
     onLoad() {
         // this.moveX = -this.edgeX - this.node.position.x;
         // this.moveY = -this.edgeY - this.node.position.y;
@@ -33,6 +37,9 @@ export default class Launcher extends cc.Component {
 
 
     start() {
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+
         this.node.getComponent(cc.RigidBody).angularVelocity = -11.1;
     }
 

@@ -16,16 +16,23 @@ export default class Hammer extends cc.Component {
 
     // cool down time
     @property
-    duration: number = 2;
+    duration: number = 2.6;
 
     volumn: number = 0;
     action: cc.Action = null;
+
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
 
     onLoad() {
         cc.director.getPhysicsManager().enabled = true;
     }
 
     start() {
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+
         let player = cc.find("Canvas/player").getComponent("Player");
         this.action = cc.sequence(cc.moveBy(1, 0, 125), cc.moveBy(0.2, 0, -125));
         var move_callback = function(){
@@ -33,7 +40,7 @@ export default class Hammer extends cc.Component {
             this.scheduleOnce(audio_callback, 1.2);
         };
         var audio_callback = function(){
-            if(player.is_Dead) return;
+            if(player.is_Dead && cc.director.getScene().name != "editor") return;
             this.hammer_audioID = cc.audioEngine.playEffect(this.hammer, false);
             cc.audioEngine.setVolume(this.hammer_audioID, this.volumn);
         }

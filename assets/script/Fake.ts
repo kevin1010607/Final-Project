@@ -14,25 +14,43 @@ export default class Fake extends cc.Component {
 
     
     @property(cc.Prefab)
-    private broken_particle: cc.Prefab = null;
+    broken_particle: cc.Prefab = null;
     
     private shake_action = null    
     private is_touched: boolean = false;
+
+    // for editor
+    pos_x: number = 0;
+    pos_y: number = 0;
     
     onLoad () {
         let shake = cc.repeat(cc.sequence(cc.moveBy(0.09, -10, 0), cc.moveBy(0.09, 10, 0)), 3);
             
         let finished = cc.callFunc(() => {
             let broken = cc.instantiate(this.broken_particle);
-            broken.setPosition(this.node.position);
-            console.log(this.node.position);
-            cc.find("Canvas").addChild(broken);
-            this.node.destroy();
+            broken.setPosition(0, 0);
+            broken.getComponent(cc.RigidBody).destroy();
+            // console.log(this.node.position);
+        
+            this.node.addChild(broken);
+            this.getComponent(cc.Sprite).enabled = false;
+
+            this.scheduleOnce(() => {
+                this.getComponent(cc.RigidBody).active = false;
+            }, 0.2);
+            this.scheduleOnce(() => {
+                broken.destroy();
+                if(cc.director.getScene().name != "editor") this.node.destroy();
+            }, 0.8);
         }, this);
             
         this.shake_action = cc.sequence(shake, finished);
     }
-    //start () {}
+
+    start () {
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+    }
 
     onBeginContact(contact, selfCollider, otherCollider){
         if(this.is_touched == true){
