@@ -15,11 +15,16 @@ export default class Camera extends cc.Component {
     // onLoad () {}
 
     start () {
+
     }
 
     update(dt){
-        if(cc.find("Canvas/player").getComponent("Player").is_Dead == false){
-            let target_positon = cc.find("Canvas/player").getPosition();
+        // for the editor scene
+        let player_node = cc.find("Canvas/player");
+        if(player_node == null) return;
+
+        if(player_node.getComponent("Player").is_Dead == false){
+            let target_positon = player_node.getPosition();
             let cur_position = this.node.getPosition();
             cur_position.lerp(target_positon, 0.1, cur_position);
             this.node.setPosition(cur_position);

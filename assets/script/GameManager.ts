@@ -177,6 +177,7 @@ export default class GameManager extends cc.Component {
         cc.director.resume();
         cc.audioEngine.stopMusic();
         let scene = cc.director.getScene().name;
+        cc.log(scene);
         cc.director.loadScene(scene);
     }
 
