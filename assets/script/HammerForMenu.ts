@@ -31,7 +31,7 @@ export default class HammerForMenu extends cc.Component {
         this.node.runAction(action);
         this.schedule(() => {
             //cc.audioEngine.playEffect(this.hammer, false);
-            cc.audioEngine.setVolume(cc.audioEngine.playEffect(this.hammer, false), 0.15);
+            cc.audioEngine.setVolume(cc.audioEngine.playEffect(this.hammer, false), 0.25);
         }, 1.2);
     }
 
