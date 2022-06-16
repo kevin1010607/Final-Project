@@ -30,9 +30,15 @@ export default class SearchLight extends cc.Component {
     volume: number = 0;
     search_audioID: number = null;
 
+    pos_x: number = 0;
+    pos_y: number = 0;
+
     // onLoad () {}
 
     start () {
+        // for editor
+        this.pos_x = this.node.x, this.pos_y = this.node.y;
+
         this.move();
         this.light = this.node.getChildByName('light');
 
@@ -63,6 +69,9 @@ export default class SearchLight extends cc.Component {
     }
 
     move(){
+        // for editor
+        if(cc.director.getScene().name == "editor") return;
+
         let action: cc.Action = cc.sequence(cc.moveBy(3, 600, 0), cc.moveBy(3, -600, 0)).repeatForever();
         this.node.runAction(action);
     }
@@ -129,8 +138,14 @@ export default class SearchLight extends cc.Component {
         let x = this.node.x;
         let y =  this.node.y - 60;
         missile.setPosition(x, y);
+<<<<<<< HEAD
         missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 1.1; // set velocity
         missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 1.1; // set velocity
+=======
+        missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 0.9; // set velocity
+        missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 0.9; // set velocity
+        // console.log(missile.getComponent(cc.RigidBody).linearVelocity.x, missile.getComponent(cc.RigidBody).linearVelocity.y);
+>>>>>>> 5e704073033fbf8b0bae438086236ae865609080
         cc.find("Canvas").addChild(missile);
     }
 }

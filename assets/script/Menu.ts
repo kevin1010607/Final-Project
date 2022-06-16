@@ -23,15 +23,56 @@ export default class Menu extends cc.Component {
     @property(cc.Label)
     score: cc.Label = null;
 
+    @property(cc.Sprite)
+    selectionBoard: cc.Sprite = null;
+
+    @property(cc.Button)
+    selectionBoardCancelButton: cc.Button = null;
+
+    @property(cc.Button)
+    enterButtonNormal: cc.Button = null;
+
+    @property(cc.Button)
+    enterButtonUnder: cc.Button = null;
+
+    @property(cc.Button)
+    enterButtonEdit: cc.Button = null;
+
+    @property(cc.Sprite)
+    underBoard: cc.Sprite = null;
+
+    @property(cc.Sprite)
+    normalBoard: cc.Sprite = null;
+
+    @property(cc.Button)
+    level1ButtonNormal: cc.Button = null;
+    @property(cc.Button)
+    level2ButtonNormal: cc.Button = null;
+    @property(cc.Button)
+    level3ButtonNormal: cc.Button = null;
+    @property(cc.Button)
+    endlessButtonNormal: cc.Button = null;
+    @property(cc.Button)
+    cancelButtonNormal: cc.Button = null;
+
+    @property(cc.Button)
+    level1ButtonUnder: cc.Button = null;
+    @property(cc.Button)
+    level2ButtonUnder: cc.Button = null;
+    @property(cc.Button)
+    level3ButtonUnder: cc.Button = null;
+    @property(cc.Button)
+    endlessButtonUnder: cc.Button = null;
+    @property(cc.Button)
+    cancelButtonUnder: cc.Button = null;
+
+    @property(cc.AudioClip)
+    button_effect: cc.AudioClip = null;
+    @property(cc.AudioClip)
+    button2_effect: cc.AudioClip = null;
+
     private userName: string = null;
     private highScore: number = null;
-
-    loadGame() {
-        let action = cc.sequence(cc.moveBy(0.3, 275, 0), cc.moveBy(0.3, 275, 0));
-        this.board.node.runAction(action);
-        cc.audioEngine.stopMusic();
-        //cc.director.loadScene("logIn");
-    }
 
     loadLeaderboard() {
         let action = cc.sequence(cc.moveBy(0.3, 192.5, 0), cc.moveBy(0.3, 192.5, 0));
@@ -49,17 +90,24 @@ export default class Menu extends cc.Component {
 
 
     loadQuestionBoard() {
-        let action = cc.sequence(cc.moveBy(0.3, 450, 0), cc.moveBy(0.3, 450, 0));
-        this.questionBoard.node.runAction(action);
         let action1 = cc.sequence(cc.moveBy(0.3, 275, 0), cc.moveBy(0.3, 275, 0));
         this.board.node.runAction(action1);
+        this.questionBoard.node.active = true;
+        this.questionBoard.node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.questionBoard.node.runAction(scaleTo);
     }
 
     closeQuestionBoard() {
-        let action = cc.sequence(cc.moveBy(0.3, -450, 0), cc.moveBy(0.3, -450, 0));
-        this.questionBoard.node.runAction(action);
+        // let action = cc.sequence(cc.moveBy(0.3, -450, 0), cc.moveBy(0.3, -450, 0));
+        // this.questionBoard.node.runAction(action);
         let action1 = cc.sequence(cc.moveBy(0.3, -275, 0), cc.moveBy(0.3, -275, 0));
         this.board.node.runAction(action1);
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.questionBoard.node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.questionBoard.node.active = false;
+        }, 0.5);
     }
 
     signOut() {
@@ -105,33 +153,189 @@ export default class Menu extends cc.Component {
         });
     }
 
+    closeSelection() {
+        let action1 = cc.sequence(cc.moveBy(0.3, -275, 0), cc.moveBy(0.3, -275, 0));
+        this.board.node.runAction(action1);
+        //cc.audioEngine.stopMusic();
+
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.selectionBoard.node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.selectionBoard.node.active = false;
+        }, 0.5);
+    }
+
+    loadGame() {
+        let action1 = cc.sequence(cc.moveBy(0.3, 275, 0), cc.moveBy(0.3, 275, 0));
+        this.board.node.runAction(action1);
+
+        this.selectionBoard.node.active = true;
+        this.selectionBoard.node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.selectionBoard.node.runAction(scaleTo);
+
+        //cc.director.loadScene("logIn");
+    }
+
+    enterNormal() {
+        let action = cc.fadeTo(0.5, 0);
+        this.selectionBoard.node.runAction(action);
+        this.scheduleOnce(() => {
+            this.selectionBoard.node.active = false;
+        }, 0.5);
+
+        this.normalBoard.node.active = true;
+        this.normalBoard.node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.normalBoard.node.runAction(scaleTo);
+    }
+
+
+    enterUnder() {
+        let action = cc.fadeTo(0.5, 0);
+        this.selectionBoard.node.runAction(action);
+        this.scheduleOnce(() => {
+            this.selectionBoard.node.active = false;
+        }, 0.5);
+
+        this.underBoard.node.active = true;
+        this.underBoard.node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.underBoard.node.runAction(scaleTo);
+    }
+
+    closeNormal() {
+        this.selectionBoard.node.active = true;
+        let action = cc.fadeTo(0.5, 255);
+        this.selectionBoard.node.runAction(action);
+
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.normalBoard.node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.normalBoard.node.active = false;
+        }, 0.5);
+    }
+
+
+    closeUnder() {
+        this.selectionBoard.node.active = true;
+        let action = cc.fadeTo(0.5, 255);
+        this.selectionBoard.node.runAction(action);
+
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.underBoard.node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.underBoard.node.active = false;
+        }, 0.5);
+    }
+
+    enterEdit() {
+        // cc.director.loadScene("editor");
+    }
+
     start() {
         let action = cc.sequence(cc.moveBy(0.3, -275, 0), cc.moveBy(0.3, -275, 0));
         this.board.node.runAction(action);
         this.loadUserData();
 
         cc.find("Canvas/board/run").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.loadGame();
         }, this);
 
         cc.find("Canvas/board/leaderBoard").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.loadLeaderboard();
         }, this);
 
         cc.find("Canvas/board/question").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.loadQuestionBoard();
         }, this);
 
         cc.find("Canvas/board/signOut").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.signOut();
         }, this);
 
         cc.find("Canvas/questionBoard/cancelButton").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
             this.closeQuestionBoard();
         }, this);
 
         cc.find("Canvas/leaderboard/closeButton").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
             this.closeLeaderboard();
+        }, this);
+
+        this.selectionBoardCancelButton.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
+            this.closeSelection();
+        }, this);
+
+        this.enterButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterNormal();
+        }, this);
+
+        this.enterButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterUnder();
+        }, this);
+
+        this.enterButtonEdit.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterEdit();
+        }, this);
+
+        this.level1ButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("normal_01");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.level2ButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("normal_02");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.level3ButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("normal_03");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.endlessButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("normal_endless");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.cancelButtonNormal.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
+            this.closeNormal();
+        }, this);
+
+
+        this.level1ButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("underworld_01");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.level2ButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("underworld_02");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.level3ButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("underworld_03");
+            cc.audioEngine.stopMusic();
+        }, this);
+        this.endlessButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            cc.director.loadScene("underworld_endless");
+        }, this);
+        this.cancelButtonUnder.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
+            this.closeUnder();
         }, this);
 
     }

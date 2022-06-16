@@ -35,6 +35,12 @@ export default class Main extends cc.Component {
     @property(cc.AudioClip)
     background_music: cc.AudioClip = null;
 
+    @property(cc.AudioClip)
+    button_effect: cc.AudioClip = null;
+
+    @property(cc.AudioClip)
+    button2_effect: cc.AudioClip = null;
+
     moving_distance: number = 230;
 
     loadSignUp() {
@@ -76,6 +82,7 @@ export default class Main extends cc.Component {
                 function (error) {
                     alert("Log in sucessfully\n");
                     CC.director.loadScene("menu");
+                    //CC.audioEngine.stopMusic();
                 }
             )
             .catch(
@@ -105,7 +112,7 @@ export default class Main extends cc.Component {
             let uid = user.uid;
             var user_name = Email.substr(0, Email.indexOf('@'));
             user_name = user_name.toLowerCase();
-            firebase.database().ref('user/' + uid).set({name: user_name, email: Email, score: 0 });
+            firebase.database().ref('user/' + uid).set({ name: user_name, email: Email, score: 0, editor: [] });
             firebase.database().ref('leaderboard/' + uid).set({ name: user_name, highest_score: 0 });
 
         }).catch((e) => {
@@ -120,26 +127,32 @@ export default class Main extends cc.Component {
         cc.audioEngine.setMusicVolume(0.8);
 
         cc.find("Canvas/board/logIn").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.loadLogIn();
         }, this);
 
         cc.find("Canvas/board/signUp").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.loadSignUp();
         }, this);
 
         cc.find("Canvas/boardSignUp/cancelButton").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
             this.loadboard(0);
         }, this);
 
         cc.find("Canvas/boardSignUp/signUp").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.signUP();
         }, this);
 
         cc.find("Canvas/boardLogIn/cancelButton").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
             this.loadboard(1);
         }, this);
 
         cc.find("Canvas/boardLogIn/logIn").on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
             this.logIn();
         }, this);
 

@@ -113,7 +113,12 @@ export default class Player extends cc.Component {
         this.dead_anime.resetSystem();
         this.scheduleOnce(function(){
             this.dead_anime.stopSystem();
-        }, 0.35)
+        }, 0.35);
+
+        // for editor
+        if(cc.director.getScene().name == "editor"){
+            this.scheduleOnce(this.playerReset, 1.0);
+        }
     }
 
     playerReset(){
