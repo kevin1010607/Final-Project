@@ -27,7 +27,7 @@ export default class SearchLightForMenu extends cc.Component {
 
     in_range: boolean = false;
     max_volumn: number = 0.6;
-    volume: number = 0.15;
+    volume: number = 0.25;
     search_audioID: number = null;
 
     // onLoad () {}
@@ -115,7 +115,7 @@ export default class SearchLightForMenu extends cc.Component {
         // else if (distance <= 1100) this.volume = 0.3;
         // else if (distance <= 1200) this.volume = 0.25;
         // else this.volume = 0;
-        this.volume = 0.15;
+        this.volume = 0.25;
     }
 
     createMissle() {
