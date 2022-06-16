@@ -35,7 +35,7 @@ export default class Button extends cc.Component {
             }
     
             let finished = cc.callFunc(function(){
-                this.node.getChildByName("door").getComponent("door").open(); 
+                this.node.getChildByName("door").getComponent("Door").open(); 
             }, this);
         
             let action;
