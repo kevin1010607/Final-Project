@@ -41,6 +41,7 @@ export default class SearchLight extends cc.Component {
 
         this.move();
         this.light = this.node.getChildByName('light');
+        this.player = cc.find("Canvas/player").getComponent(Player);
 
         let changeVolumeCallback = function(){
             if (this.player.is_Dead) return;
@@ -137,8 +138,8 @@ export default class SearchLight extends cc.Component {
         let x = this.node.x;
         let y =  this.node.y - 60;
         missile.setPosition(x, y);
-        missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 0.9; // set velocity
-        missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 0.9; // set velocity
+        missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 1.1; // set velocity
+        missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 1.1; // set velocity
         // console.log(missile.getComponent(cc.RigidBody).linearVelocity.x, missile.getComponent(cc.RigidBody).linearVelocity.y);
         cc.find("Canvas").addChild(missile);
     }
