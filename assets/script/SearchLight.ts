@@ -127,7 +127,6 @@ export default class SearchLight extends cc.Component {
     }
 
     createMissle(){
-        if (this.player.is_Dead) return;
         this.missile_is_ready = false;
         //let bullet = null;
         this.scheduleOnce(() => {
@@ -138,14 +137,9 @@ export default class SearchLight extends cc.Component {
         let x = this.node.x;
         let y =  this.node.y - 60;
         missile.setPosition(x, y);
-<<<<<<< HEAD
-        missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 1.1; // set velocity
-        missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 1.1; // set velocity
-=======
         missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 0.9; // set velocity
         missile.getComponent(cc.RigidBody).linearVelocity.y = (this.player.node.y - y) * 0.9; // set velocity
         // console.log(missile.getComponent(cc.RigidBody).linearVelocity.x, missile.getComponent(cc.RigidBody).linearVelocity.y);
->>>>>>> 5e704073033fbf8b0bae438086236ae865609080
         cc.find("Canvas").addChild(missile);
     }
 }
