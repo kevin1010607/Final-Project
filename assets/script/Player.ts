@@ -172,12 +172,15 @@ export default class Player extends cc.Component {
 
         // Touch the ground
         if ( (other.tag == 0 || other.tag == 2) && Math.abs(Manifold.normal.y) > 0.9 ){
+            cc.log("ground");
             this.on_ground = true;
             this.is_Jumping = false;
         }
 
         // Touch the wall
         if(other.tag == 0 &&  Math.abs(Manifold.normal.x) >= 0.98){
+            cc.log("wall");
+            cc.log(this.on_ground);
             this.on_wall = true;
             this.wall_object = other;
         }
@@ -195,7 +198,7 @@ export default class Player extends cc.Component {
     onEndContact(contact, self, other){
         var Manifold = contact.getWorldManifold();
 
-        if ((other.tag == 0||other.tag ==2) && Manifold.normal.y <= -0.9){
+        if ((other.tag == 0||other.tag ==2) && other != this.wall_object){
             this.on_ground = false;
         }
 
@@ -254,28 +257,4 @@ export default class Player extends cc.Component {
         if (this.current_speed == this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = 600;
         else if (this.current_speed == -this.moving_speed) this.getComponent(cc.RigidBody).angularVelocity  = -600;
     }
-
-    /*
-    cameraMove(){
-        if(this.is_Dead) return;
-        this.camera.node.x = this.node.x;
-        // if (this.is_underfloor) {
-        //     if (this.camera.node.y != -360 && this.camera.node.y >= this.node.y + this.relative_y)
-        //     this.camera.node.y = this.node.y + this.relative_y;
-        // }
-        // else { 
-        //     this.camera.node.y = this.node.y + this.relative_y;
-        // } 
-
-        if (!this.is_underfloor && this.camera.node.y != 0 && this.on_ground) this.camera.node.y = this.node.y + this.relative_y;
-        if (this.is_underfloor && this.camera.node.y != -360) this.camera.node.y = this.node.y + this.relative_y + 30; 
-    
-        if (this.camera.node.x < 0) this.camera.node.x = 0;
-        if (this.camera.node.x > this.map_length) this.camera.node.x = this.map_length;
-        if (this.camera.node.y < -360) {
-            this.camera.node.y = -360;
-        }
-        if (this.camera.node.y > 0) this.camera.node.y = 0;
-    }
-    */
 }
