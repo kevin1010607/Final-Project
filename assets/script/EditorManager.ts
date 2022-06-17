@@ -86,6 +86,8 @@ export default class EditorManager extends cc.Component {
     spike_down_audioclip: cc.AudioClip = null;
 
     // enemies node
+    private floor_parent_node: cc.Node = null;
+    private wall_parent_node: cc.Node = null;
     private search_light_parent_node: cc.Node = null;
     private launcher_parent_node: cc.Node = null;
     private hammer_parent_node: cc.Node = null;
@@ -138,10 +140,10 @@ export default class EditorManager extends cc.Component {
 
         this.bindingParentNode();
 
-        let w = cc.find("Canvas/ground/wall");
-        let f = cc.find("Canvas/ground/floor");
-        w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
+        let f = this.floor_parent_node.getChildByName("floor");
+        let w = this.wall_parent_node.getChildByName("wall");
         f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
+        w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
 
         for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
             let boundary = cc.instantiate(this.boundary_prefab);
@@ -163,7 +165,7 @@ export default class EditorManager extends cc.Component {
         if(this.is_test){
             // stop the test
             this.is_test = false;
-            label.string = "test";
+            label.string = "Test";
             this.player.getComponent(Player).playerDead();
             this.scheduleOnce(() => {
                 this.player.destroy();
@@ -173,11 +175,15 @@ export default class EditorManager extends cc.Component {
         else{
             // start the test
             this.is_test = true;
-            label.string = "stop";
+            label.string = "Stop";
             this.player = cc.instantiate(this.player_prefab);
             cc.find("Canvas").addChild(this.player);
             this.toggleAllEnemyScript(true);
         }
+    }
+
+    handleStoreBtn(){
+        
     }
 
     handleBtn(event, prefab_name){
@@ -186,12 +192,12 @@ export default class EditorManager extends cc.Component {
         let object: cc.Node;
         if(prefab_name == "floor"){
             object = cc.instantiate(this.floor_prefab);
-            cc.find("Canvas/ground").addChild(object);
+            this.floor_parent_node.addChild(object);
             object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "wall"){
             object = cc.instantiate(this.wall_prefab);
-            cc.find("Canvas/ground").addChild(object);
+            this.wall_parent_node.addChild(object);
             object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "light" && !this.is_test){
@@ -540,6 +546,9 @@ export default class EditorManager extends cc.Component {
     }
 
     bindingParentNode(){
+        let ground_node = cc.find("Canvas/ground");
+        this.floor_parent_node = ground_node.getChildByName("floors");
+        this.wall_parent_node = ground_node.getChildByName("walls");
         let enemies_node = cc.find("Canvas/enemies");
         this.search_light_parent_node = enemies_node.getChildByName("search_lights");
         this.launcher_parent_node = enemies_node.getChildByName("launchers");
