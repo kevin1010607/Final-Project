@@ -945,7 +945,7 @@
       "__uuid__": "44a682c3-8c8e-464a-a85e-febbbe37bbe8"
     },
     "_texture": null,
-    "_stopped": false,
+    "_stopped": true,
     "playOnLoad": true,
     "autoRemoveOnFinish": false,
     "totalParticles": 300,
@@ -2968,8 +2968,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        44.751,
-        -100.32,
+        168.143,
+        172.305,
         0,
         0,
         0,
@@ -4389,7 +4389,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        3939.697,
+        3944.244,
         421.629,
         0,
         0,
@@ -5935,7 +5935,7 @@
       "ctor": "Float64Array",
       "array": [
         1540.76,
-        350.279,
+        344.123,
         0,
         0,
         0,

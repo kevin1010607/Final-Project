@@ -172,15 +172,12 @@ export default class Player extends cc.Component {
 
         // Touch the ground
         if ( (other.tag == 0 || other.tag == 2) && Math.abs(Manifold.normal.y) > 0.9 ){
-            cc.log("ground");
             this.on_ground = true;
             this.is_Jumping = false;
         }
 
         // Touch the wall
         if(other.tag == 0 &&  Math.abs(Manifold.normal.x) >= 0.98){
-            cc.log("wall");
-            cc.log(this.on_ground);
             this.on_wall = true;
             this.wall_object = other;
         }
