@@ -29,6 +29,7 @@ export default class SearchLight extends cc.Component {
     max_volumn: number = 0.6;
     volume: number = 0;
     search_audioID: number = null;
+    camera: cc.Node = null;
 
     // for editor
     pos_x: number = 0;
@@ -43,6 +44,7 @@ export default class SearchLight extends cc.Component {
         this.move();
         this.light = this.node.getChildByName('light');
         this.player = cc.find("Canvas/player").getComponent(Player);
+        this.camera = cc.find("Canvas/Main Camera");
 
         let changeVolumeCallback = function(){
             if (this.player.is_Dead) return;
@@ -112,8 +114,8 @@ export default class SearchLight extends cc.Component {
     }
 
     detectInRange(){
-        let camera = cc.find("Canvas/Main Camera");
-        let distance = Math.abs(this.node.x - camera.x);
+
+        let distance = Math.abs(this.node.x - this.camera.x);
         if (distance <= 500) this.volume = 0.45;
         else if (distance <= 600) this.volume = 0.43;
         else if (distance <= 700) this.volume = 0.41;
@@ -122,6 +124,10 @@ export default class SearchLight extends cc.Component {
         else if (distance <= 1000) this.volume = 0.35;
         else if (distance <= 1100) this.volume = 0.3;
         else if (distance <= 1200) this.volume = 0.25;
+        else if (distance <= 1300) this.volume = 0.2;
+        else if (distance <= 1400) this.volume = 0.15;
+        else if (distance <= 1500) this.volume = 0.1;
+        else if (distance <= 1600) this.volume = 0.05;
         else this.volume = 0;
     }
 
