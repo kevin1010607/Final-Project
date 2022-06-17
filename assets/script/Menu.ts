@@ -44,6 +44,9 @@ export default class Menu extends cc.Component {
     @property(cc.Sprite)
     normalBoard: cc.Sprite = null;
 
+    @property(cc.Sprite)
+    editBoard: cc.Sprite = null;
+
     @property(cc.Button)
     level1ButtonNormal: cc.Button = null;
     @property(cc.Button)
@@ -65,6 +68,26 @@ export default class Menu extends cc.Component {
     endlessButtonUnder: cc.Button = null;
     @property(cc.Button)
     cancelButtonUnder: cc.Button = null;
+
+    @property(cc.Button)
+    map1ButtonEditMap: cc.Button = null;
+    @property(cc.Button)
+    map2ButtonEditMap: cc.Button = null;
+    @property(cc.Button)
+    map3ButtonEditMap: cc.Button = null;
+    @property(cc.Button)
+    map4ButtonEditMap: cc.Button = null;
+    //
+    @property(cc.Button)
+    map1ButtonEditPlay: cc.Button = null;
+    @property(cc.Button)
+    map2ButtonEditPlay: cc.Button = null;
+    @property(cc.Button)
+    map3ButtonEditPlay: cc.Button = null;
+    @property(cc.Button)
+    map4ButtonEditPlay: cc.Button = null;
+    @property(cc.Button)
+    cancelButtonEdit: cc.Button = null;
 
     @property(cc.AudioClip)
     button_effect: cc.AudioClip = null;
@@ -204,6 +227,20 @@ export default class Menu extends cc.Component {
         this.underBoard.node.runAction(scaleTo);
     }
 
+    enterEdit() {
+        // cc.director.loadScene("editor");
+        let action = cc.fadeTo(0.5, 0);
+        this.selectionBoard.node.runAction(action);
+        this.scheduleOnce(() => {
+            this.selectionBoard.node.active = false;
+        }, 0.5);
+
+        this.editBoard.node.active = true;
+        this.editBoard.node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.editBoard.node.runAction(scaleTo);
+    }
+
     closeNormal() {
         this.selectionBoard.node.active = true;
         let action = cc.fadeTo(0.5, 255);
@@ -229,9 +266,18 @@ export default class Menu extends cc.Component {
         }, 0.5);
     }
 
-    enterEdit() {
-        // cc.director.loadScene("editor");
+    closeEdit() {
+        this.selectionBoard.node.active = true;
+        let action = cc.fadeTo(0.5, 255);
+        this.selectionBoard.node.runAction(action);
+
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.editBoard.node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.editBoard.node.active = false;
+        }, 0.5);
     }
+
 
     start() {
         let action = cc.sequence(cc.moveBy(0.3, -275, 0), cc.moveBy(0.3, -275, 0));
@@ -338,5 +384,82 @@ export default class Menu extends cc.Component {
             this.closeUnder();
         }, this);
 
+        this.map1ButtonEditMap.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToEditMap("map1");
+        }, this);
+        this.map2ButtonEditMap.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToEditMap("map2");
+        }, this);
+        this.map3ButtonEditMap.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToEditMap("map3");
+        }, this);
+        this.map4ButtonEditMap.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToEditMap("map4");
+        }, this);
+        //
+        this.map1ButtonEditPlay.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToPlayMap("map1");
+        }, this);
+        this.map2ButtonEditPlay.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToPlayMap("map2");
+        }, this);
+        this.map3ButtonEditPlay.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToPlayMap("map3");
+        }, this);
+        this.map4ButtonEditPlay.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button_effect, false);
+            this.enterToPlayMap("map4");
+        }, this);
+        this.cancelButtonEdit.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
+            this.closeEdit();
+        }, this);
+
+
+
+    }
+
+
+    // map_name: map1, map2, map3, map4
+
+    enterToEditMap(map_name: string) {
+        let uid = firebase.auth().currentUser.uid;
+        firebase.database().ref('user/' + uid + '/current_editor').set(map_name);
+        firebase.database().ref('user/' + uid + '/' + map_name).once('value').then((snapshot) => {
+            if (snapshot.val() == null) {
+                let data = {
+                    floors: [{ x: -133.2, y: -252 }],
+                    walls: [{ x: -415, y: 88 }]
+                };
+                firebase.database().ref('user/' + uid + '/' + map_name).set(data);
+            }
+            this.scheduleOnce(() => {
+                cc.director.loadScene("editor");
+            }, 0.5);
+        });
+    }
+
+    enterToPlayMap(map_name: string) {
+        let uid = firebase.auth().currentUser.uid;
+        firebase.database().ref('user/' + uid + '/current_editor').set(map_name);
+        firebase.database().ref('user/' + uid + '/' + map_name).once('value').then((snapshot) => {
+            if (snapshot.val() == null) {
+                let data = {
+                    floors: [{ x: -133.2, y: -252 }],
+                    walls: [{ x: -415, y: 88 }]
+                };
+                firebase.database().ref('user/' + uid + '/' + map_name).set(data);
+            }
+            this.scheduleOnce(() => {
+                cc.director.loadScene("editor_play");
+            }, 0.5);
+        });
     }
 }
