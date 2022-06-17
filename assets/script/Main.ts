@@ -112,12 +112,7 @@ export default class Main extends cc.Component {
             let uid = user.uid;
             var user_name = Email.substr(0, Email.indexOf('@'));
             user_name = user_name.toLowerCase();
-            firebase.database().ref('user/' + uid).set
-            ({ name: user_name, email: Email});
-
-            firebase.database().ref('user/' + uid + "/score").set
-            ({normal_01: 0, normal_02: 0, normal_03: 0, normal_endless: 0, underworld_01: 0, underworld_02: 0, underworld_03: 0, underworld_endless: 0});
-
+            firebase.database().ref('user/' + uid).set({name: user_name, email: Email, score: 0});
             firebase.database().ref('leaderboard/' + uid).set({ name: user_name, highest_score: 0 });
 
         }).catch((e) => {

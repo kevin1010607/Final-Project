@@ -157,11 +157,10 @@ export default class GameManager extends cc.Component {
         let user_uid = firebase.auth().currentUser.uid;
         cc.log(user_uid);
         let score = this.score;
-        let scene = cc.director.getScene().name;
-        firebase.database().ref("user/" + user_uid + "/score/" + scene).once("value", (data)=>{
-            let past_score = data.val();
+        firebase.database().ref("user/" + user_uid).once("value", (data)=>{
+            let past_score = data.val().score;
             if (score > past_score || past_score == null) {
-                firebase.database().ref("user/" + user_uid + "/score/" + scene).set(score);
+                firebase.database().ref("user/" + user_uid).update({score: score});
             } 
         });
 
