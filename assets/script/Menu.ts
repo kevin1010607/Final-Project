@@ -161,16 +161,16 @@ export default class Menu extends cc.Component {
             THIS.score.getComponent(cc.Label).string = THIS.highScore.toString();
         });
 
-        firebase.database().ref('leaderboard').once('value').then((snapshot) => {
+        firebase.database().ref('user').once('value').then((snapshot) => {
             // console.log(snapshot.val());
             var data = snapshot.val();
             var sorted = Object.keys(data).sort((a, b) => {
-                return data[b].highest_score - data[a].highest_score;
+                return data[b].score - data[a].score;
             });
             CC.log(sorted.length);
             for (var i = 0; i < sorted.length; i++) {
                 CC.find("Canvas/leaderboard/name_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].name.toUpperCase());
-                CC.find("Canvas/leaderboard/score_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].highest_score);
+                CC.find("Canvas/leaderboard/score_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].score);
             }
 
         });
