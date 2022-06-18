@@ -119,10 +119,15 @@ export default class EditorManager extends cc.Component {
     private is_drag: boolean = false;
     private mouse_x: number = 0;
     private mouse_y: number = 0;
-    private cold_time: number = 1;
-    private remaining_time: number = 0;
+
+    private cold_time_test_stop: number = 1;
+    private remaining_time_test_stop: number = 0;
+    private cold_time_store: number = 2;
+    private remaining_time_store: number = 0;
 
     private drag_object: cc.Node = null;
+
+    private map_name: string = "";
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -161,11 +166,12 @@ export default class EditorManager extends cc.Component {
     }
 
     handleTestOrStopBtn(){
-        if(this.is_drag || this.remaining_time > 0.1) return;
-        this.remaining_time = this.cold_time;
+        if(this.is_drag || this.remaining_time_test_stop > 0.1) return;
+        this.remaining_time_test_stop = this.cold_time_test_stop;
         let label: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
         if(this.is_test){
             // stop the test
+            console.log("Stop!");
             this.is_test = false;
             label.string = "Test";
             this.player.getComponent(Player).playerDead();
@@ -176,6 +182,7 @@ export default class EditorManager extends cc.Component {
         }
         else{
             // start the test
+            console.log("Test!");
             this.is_test = true;
             label.string = "Stop";
             this.player = cc.instantiate(this.player_prefab);
@@ -185,7 +192,95 @@ export default class EditorManager extends cc.Component {
     }
 
     handleStoreBtn(){
-        
+        if(this.is_drag || this.is_test || this.remaining_time_store > 0.1) return;
+        this.remaining_time_store = this.cold_time_store;
+        console.log("Store!");
+        let uid = firebase.auth().currentUser.uid;
+
+        // floor
+        let floors = [];
+        this.floor_parent_node.children.forEach((i) => {
+            floors.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/floors').set(floors);
+
+        // wall
+        let walls = [];
+        this.wall_parent_node.children.forEach((i) => {
+            walls.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/walls').set(walls);
+
+        let search_lights = [];
+        this.search_light_parent_node.children.forEach((i) => {
+            search_lights.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/search_lights').set(search_lights);
+
+        let launchers = [];
+        this.launcher_parent_node.children.forEach((i) => {
+            launchers.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/launchers').set(launchers);
+
+        let hammers = [];
+        this.hammer_parent_node.children.forEach((i) => {
+            hammers.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/hammers').set(hammers);
+
+        let blades = [];
+        this.blade_parent_node.children.forEach((i) => {
+            blades.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/blades').set(blades);
+
+        let lavas = [];
+        this.lava_parent_node.children.forEach((i) => {
+            lavas.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/lavas').set(lavas);
+
+        let boxes = [];
+        this.box_parent_node.children.forEach((i) => {
+            boxes.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/boxes').set(boxes);
+
+        let fakes = [];
+        this.fake_parent_node.children.forEach((i) => {
+            fakes.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/fakes').set(fakes);
+
+        let spike1s = [];
+        this.spike1_parent_node.children.forEach((i) => {
+            spike1s.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike1s').set(spike1s);
+
+        let spike2s = [];
+        this.spike2_parent_node.children.forEach((i) => {
+            spike2s.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike2s').set(spike2s);
+
+        let spike3s = [];
+        this.spike3_parent_node.children.forEach((i) => {
+            spike3s.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike3s').set(spike3s);
+
+        let spike4s = [];
+        this.spike4_parent_node.children.forEach((i) => {
+            spike4s.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').set(spike4s);
+    }
+
+    handleMenuBtn(){
+        cc.audioEngine.stopMusic();
+        cc.director.loadScene("menu");
     }
 
     handleBtn(event, prefab_name, drag=true, x=null, y=null){
@@ -548,8 +643,8 @@ export default class EditorManager extends cc.Component {
     }
 
     updateColdTime(dt){
-        this.remaining_time = Math.max(0, this.remaining_time-dt);
-        // console.log(this.remaining_time);
+        this.remaining_time_test_stop = Math.max(0, this.remaining_time_test_stop-dt);
+        this.remaining_time_store = Math.max(0, this.remaining_time_store-dt);
     }
 
     updateDrag(){
@@ -583,15 +678,96 @@ export default class EditorManager extends cc.Component {
     placeAllBlock(){
         let uid = firebase.auth().currentUser.uid;
         firebase.database().ref('user/'+uid+'/current_editor').once('value').then((snapShot) => {
-            let map_name = snapShot.val();
-            firebase.database().ref('user/'+uid+'/'+map_name+'/floors').once('value').then((snapShot) => {
+            this.map_name = snapShot.val();
+            // floor
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/floors').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
                     this.handleBtn(null, "floor", false, node.x, node.y);
                 });
             });
-            firebase.database().ref('user/'+uid+'/'+map_name+'/walls').once('value').then((snapShot) => {
+            // wall
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/walls').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
                     this.handleBtn(null, "wall", false, node.x, node.y);
+                });
+            });
+            // search light
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/search_lights').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "light", false, node.x, node.y);
+                });
+            });
+            // launcher
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/launchers').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "launcher", false, node.x, node.y);
+                });
+            });
+            // hammer
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/hammers').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "hammer", false, node.x, node.y);
+                });
+            });
+            // blade
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/blades').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "blade", false, node.x, node.y);
+                });
+            });
+            // lava
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/lavas').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "lava", false, node.x, node.y);
+                });
+            });
+            // box
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/boxes').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "box", false, node.x, node.y);
+                });
+            });
+            // fake
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/fakes').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "fake", false, node.x, node.y);
+                });
+            });
+            // spike1
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike1s').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "spike1", false, node.x, node.y);
+                });
+            });
+            // spike2
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike2s').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "spike2", false, node.x, node.y);
+                });
+            });
+            // spike3
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike3s').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "spike3", false, node.x, node.y);
+                });
+            });
+            // spike4
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "spike4", false, node.x, node.y);
                 });
             });
         });

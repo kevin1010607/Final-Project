@@ -431,7 +431,6 @@ export default class Menu extends cc.Component {
 
     enterToEditMap(map_name: string) {
         let uid = firebase.auth().currentUser.uid;
-        firebase.database().ref('user/' + uid + '/current_editor').set(map_name);
         firebase.database().ref('user/' + uid + '/' + map_name).once('value').then((snapshot) => {
             if (snapshot.val() == null) {
                 let data = {
@@ -440,15 +439,14 @@ export default class Menu extends cc.Component {
                 };
                 firebase.database().ref('user/' + uid + '/' + map_name).set(data);
             }
-            this.scheduleOnce(() => {
+            firebase.database().ref('user/' + uid + '/current_editor').set(map_name).then(() => {
                 cc.director.loadScene("editor");
-            }, 0.5);
+            });
         });
     }
 
     enterToPlayMap(map_name: string) {
         let uid = firebase.auth().currentUser.uid;
-        firebase.database().ref('user/' + uid + '/current_editor').set(map_name);
         firebase.database().ref('user/' + uid + '/' + map_name).once('value').then((snapshot) => {
             if (snapshot.val() == null) {
                 let data = {
@@ -457,9 +455,9 @@ export default class Menu extends cc.Component {
                 };
                 firebase.database().ref('user/' + uid + '/' + map_name).set(data);
             }
-            this.scheduleOnce(() => {
+            firebase.database().ref('user/' + uid + '/current_editor').set(map_name).then(() => {
                 cc.director.loadScene("editor_play");
-            }, 0.5);
+            });
         });
     }
 }
