@@ -23,9 +23,9 @@ export default class ButtonSpike extends cc.Component {
     onLoad () {
 
     }
-
+    
     start () {
-
+        
     }
 
     onBeginContact(contact, self, other){
@@ -35,15 +35,9 @@ export default class ButtonSpike extends cc.Component {
             }
     
             let finished = cc.callFunc(function(){
-                let spike = this.node.getChildByName("spike");
-                if(spike.getComponent(cc.PhysicsBoxCollider).tag == 0){ // move up first
-                    let action = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, 25), cc.delayTime(1.5), cc.moveBy(0.2, 0, -25)));
-                    spike.runAction(action);
-                }
-                else{
-                    let action = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, -25), cc.delayTime(1.5), cc.moveBy(0.2, 0, 25)));
-                    spike.runAction(action);
-                }
+                this.node.getChildByName("spike").getComponent("SpikeForMultiPlayer").trigger();
+                // let action1 = cc.repeatForever(cc.sequence(cc.moveBy(0.2, 0, 75), cc.delayTime(0.8), cc.moveBy(0.2, 0, -75), cc.delayTime(2)));
+                // spike.runAction(action1);
             }, this);
         
             let action;

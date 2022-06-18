@@ -28,7 +28,7 @@ export default class CameraMultiPlayer extends cc.Component {
 
     update (dt) {
          console.log(this.player2.node.x);
-        this.node.x = this.node.x + dt*140; 
+        this.node.x = this.node.x + dt*160; 
         if(this.player1.node.x <= this.node.x + cc.find("Canvas/Main Camera/Spikes_0001").x){
             this.player1.getComponent("Player").playerDead();
         }

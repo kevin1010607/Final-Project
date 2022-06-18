@@ -8,7 +8,7 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class ButtonBlade extends cc.Component {
+export default class ButtonDoor extends cc.Component {
 
     // 按鈕移動的方向 ==> [Down Up Left Right] = [0 1 2 3]
     @property
@@ -35,8 +35,7 @@ export default class ButtonBlade extends cc.Component {
             }
     
             let finished = cc.callFunc(function(){
-                this.node.getChildByName("blade").getComponent("BladeForMultiPlayer").trigger();
-
+                this.node.getChildByName("door").getComponent("DoorForMultiPlayer").open(); 
             }, this);
         
             let action;
