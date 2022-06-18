@@ -10,7 +10,8 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Box extends cc.Component {
 
-    underworld_bound: number = -190; // if player.y less than 190, anti-gravity
+    @property
+    underworld_bound: number = -190; // if y less than 190, anti-gravity
 
     // for editor
     pos_x: number = 0;
