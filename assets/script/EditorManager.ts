@@ -4,6 +4,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+
 import Player from "./Player";
 import SearchLight from "./SearchLight";
 import Launcher from "./Launcher";
@@ -28,14 +29,25 @@ export default class EditorManager extends cc.Component {
 
     @property(cc.Node)
     camera: cc.Node = null;
+
     @property(cc.Node)
     boundary_node: cc.Node = null;
+    @property(cc.Node)
+    left_boundary_node: cc.Node = null;
+    @property(cc.Node)
+    right_boundary_node: cc.Node = null;
+    @property(cc.Node)
+    up_boundary_node: cc.Node = null;
+    @property(cc.Node)
+    down_boundary_node: cc.Node = null;
 
     // prefab
     @property(cc.Prefab)
     player_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     boundary_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    boundary_edge_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     floor_prefab: cc.Prefab = null;
     @property(cc.Prefab)
@@ -147,16 +159,12 @@ export default class EditorManager extends cc.Component {
         this.bindingParentNode();
         this.placeAllBlock();
 
+        this.createBoundary();
+
         // let f = this.floor_parent_node.getChildByName("floor");
         // let w = this.wall_parent_node.getChildByName("wall");
         // f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
-        // w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
-
-        for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
-            let boundary = cc.instantiate(this.boundary_prefab);
-            boundary.setPosition(x, y);
-            this.boundary_node.addChild(boundary);
-        }
+        // w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});        
     }
 
     update (dt) {
@@ -771,6 +779,51 @@ export default class EditorManager extends cc.Component {
                 });
             });
         });
+    }
+
+    createBoundary(){
+        // boundary
+        for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
+            let boundary = cc.instantiate(this.boundary_prefab);
+            boundary.setPosition(x, y);
+            this.boundary_node.addChild(boundary);
+        }
+
+        // left spike
+        for(let x = this.left_boundary+20, y = this.up_boundary; y >= this.down_boundary; y -= 60){
+            let spike = cc.instantiate(this.boundary_edge_prefab);
+            spike.setPosition(x, y);
+            spike.rotation = 90;
+            spike.getComponent(StaticSpike).direction = 3;
+            this.left_boundary_node.addChild(spike);
+        }
+
+        // right spike
+        for(let x = this.right_boundary-20, y = this.up_boundary; y >= this.down_boundary; y -= 60){
+            let spike = cc.instantiate(this.boundary_edge_prefab);
+            spike.setPosition(x, y);
+            spike.rotation = 270;
+            spike.getComponent(StaticSpike).direction = 2;
+            this.right_boundary_node.addChild(spike);
+        }
+
+        // up spike
+        // for(let x = this.left_boundary, y = this.up_boundary-20; x <= this.right_boundary; x += 60){
+        //     let spike = cc.instantiate(this.boundary_edge_prefab);
+        //     spike.setPosition(x, y);
+        //     spike.rotation = 180;
+        //     spike.getComponent(StaticSpike).direction = 0;
+        //     this.up_boundary_node.addChild(spike);
+        // }
+
+        // down spike
+        // for(let x = this.left_boundary, y = this.down_boundary+20; x <= this.right_boundary; x += 60){
+        //     let spike = cc.instantiate(this.boundary_edge_prefab);
+        //     spike.setPosition(x, y);
+        //     spike.rotation = 0;
+        //     spike.getComponent(StaticSpike).direction = 1;
+        //     this.down_boundary_node.addChild(spike);
+        // }
     }
 
     onKeyDown(event){
