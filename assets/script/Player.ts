@@ -13,6 +13,9 @@ export default class Player extends cc.Component {
     @property
     underworld_bound: number = -190; // if player.y less than 190, anti-gravity
 
+    @property
+    id: number = 1; // player 1 
+
     player_eye: cc.Node = null;
     eye_relative: cc.Vec2 = null;
 
@@ -134,30 +137,60 @@ export default class Player extends cc.Component {
 
     onKeyDown(event){
         var macro = cc.macro;
-        switch(event.keyCode){
-            case macro.KEY.left:
-                this.turnLeft();
-                break;
-            case macro.KEY.right:
-                this.turnRight();
-                break;
-            case macro.KEY.space:
-                if(this.is_Jumping == false) this.jump();             
-                break;
+        if(this.id == 1){
+            switch(event.keyCode){
+                case macro.KEY.left:
+                    this.turnLeft();
+                    break;
+                case macro.KEY.right:
+                    this.turnRight();
+                    break;
+                case macro.KEY.space:
+                    if(this.is_Jumping == false) this.jump();             
+                    break;
+            }
+            
+        }
+        else{
+            switch(event.keyCode){
+                case macro.KEY.a:
+                    this.turnLeft();
+                    break;
+                case macro.KEY.d:
+                    this.turnRight();
+                    break;
+                case macro.KEY.w:
+                    if(this.is_Jumping == false) this.jump();             
+                    break;
+            }
         }
     }
 
     onKeyUp(event){
         var macro = cc.macro;
-        switch(event.keyCode){
-            case macro.KEY.left:
-                if (this.current_speed < 0 )this.current_speed = 0;
-                break;
-            case macro.KEY.right:
-                if (this.current_speed > 0 ) this.current_speed = 0;
-                break;
-            case macro.KEY.space:
-                break;
+        if(this.id == 1){
+            switch(event.keyCode){
+                case macro.KEY.left:
+                    if (this.current_speed < 0 )this.current_speed = 0;
+                    break;
+                case macro.KEY.right:
+                    if (this.current_speed > 0 ) this.current_speed = 0;
+                    break;
+                case macro.KEY.space:
+                    break;
+            }
+        }
+        else{
+            switch(event.keyCode){
+                case macro.KEY.a:
+                    if (this.current_speed < 0 )this.current_speed = 0;
+                    break;
+                case macro.KEY.d:
+                    if (this.current_speed > 0 ) this.current_speed = 0;
+                    break;
+                case macro.KEY.w:
+                    break;
+            }
         }
     }
 

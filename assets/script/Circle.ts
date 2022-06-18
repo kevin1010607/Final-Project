@@ -40,6 +40,7 @@ export default class Circle extends cc.Component {
     one_prefab: cc.Prefab = null
 
     start () {
+        /*
         if(cc.find("Canvas/player").x < 1500){
             this.schedule(()=>{
                 this.scheduleOnce(this.gen_5_prefab, 0);
@@ -50,6 +51,7 @@ export default class Circle extends cc.Component {
                 this.scheduleOnce(this.trigger, 5);
             }, 5 + this.move_time, cc.macro.REPEAT_FOREVER, 0);
         }
+        */
     }
     
     trigger () { 
