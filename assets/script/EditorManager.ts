@@ -16,6 +16,7 @@ import DynamicSpike from "./DynamicSpike";
 import StaticSpike from "./StaticSpike";
 
 const {ccclass, property} = cc._decorator;
+declare const firebase: any
 
 @ccclass
 export default class EditorManager extends cc.Component {
@@ -139,11 +140,12 @@ export default class EditorManager extends cc.Component {
         cc.find("Canvas").on(cc.Node.EventType.MOUSE_MOVE, this.updateMousePosition, this);
 
         this.bindingParentNode();
+        this.placeAllBlock();
 
-        let f = this.floor_parent_node.getChildByName("floor");
-        let w = this.wall_parent_node.getChildByName("wall");
-        f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
-        w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
+        // let f = this.floor_parent_node.getChildByName("floor");
+        // let w = this.wall_parent_node.getChildByName("wall");
+        // f.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, f);});
+        // w.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, w);});
 
         for(let x = this.left_boundary+30, y = -216.25; x < this.right_boundary; x += 60){
             let boundary = cc.instantiate(this.boundary_prefab);
@@ -186,97 +188,112 @@ export default class EditorManager extends cc.Component {
         
     }
 
-    handleBtn(event, prefab_name){
+    handleBtn(event, prefab_name, drag=true, x=null, y=null){
         if(this.is_drag) return;
 
         let object: cc.Node;
         if(prefab_name == "floor"){
             object = cc.instantiate(this.floor_prefab);
+            if(x && y) object.setPosition(x, y);
             this.floor_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "wall"){
             object = cc.instantiate(this.wall_prefab);
+            if(x && y) object.setPosition(x, y);
             this.wall_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "light" && !this.is_test){
             object = cc.instantiate(this.search_light_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(SearchLight).destroy();
             this.search_light_parent_node.addChild(object);
         }
         else if(prefab_name == "launcher" && !this.is_test){
             object = cc.instantiate(this.launcher_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Launcher).destroy();
             this.launcher_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "hammer" && !this.is_test){
             object = cc.instantiate(this.hammer_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Hammer).destroy();
             this.hammer_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "blade" && !this.is_test){
             object = cc.instantiate(this.blade_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Blade).destroy();
             this.blade_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "lava" && !this.is_test){
             object = cc.instantiate(this.lava_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Lava).destroy();
             this.lava_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "box" && !this.is_test){
             object = cc.instantiate(this.box_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Box).destroy();
             this.box_parent_node.addChild(object);
             object.getComponent(cc.RigidBody).type = cc.RigidBodyType.Kinematic;
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "fake" && !this.is_test){
             object = cc.instantiate(this.fake_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(Fake).destroy();
             this.fake_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "spike1" && !this.is_test){
             object = cc.instantiate(this.spike1_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(DynamicSpike).destroy();
             this.spike1_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "spike2" && !this.is_test){
             object = cc.instantiate(this.spike2_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(StaticSpike).destroy();
             this.spike2_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "spike3" && !this.is_test){
             object = cc.instantiate(this.spike3_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(StaticSpike).destroy();
             this.spike3_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
             object.rotation = 180;
         }
         else if(prefab_name == "spike4" && !this.is_test){
             object = cc.instantiate(this.spike4_prefab);
+            if(x && y) object.setPosition(x, y);
             object.getComponent(StaticSpike).destroy();
             this.spike4_parent_node.addChild(object);
-            object.getComponent(cc.RigidBody).active = false;
+            if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else{
             return;
         }
 
-        object.opacity = 180;
         object.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, object);});
-        this.drag_object = object;
-        this.scheduleOnce(() => {
-            this.is_drag = true;
-        }, 0.01);
+        if(drag){
+            object.opacity = 180;
+            this.drag_object = object;
+            this.scheduleOnce(() => {
+                this.is_drag = true;
+            }, 0.01);
+        }
     }
 
     placeOrCancelObject(event){
@@ -561,6 +578,23 @@ export default class EditorManager extends cc.Component {
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
         this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+    }
+
+    placeAllBlock(){
+        let uid = firebase.auth().currentUser.uid;
+        firebase.database().ref('user/'+uid+'/current_editor').once('value').then((snapShot) => {
+            let map_name = snapShot.val();
+            firebase.database().ref('user/'+uid+'/'+map_name+'/floors').once('value').then((snapShot) => {
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "floor", false, node.x, node.y);
+                });
+            });
+            firebase.database().ref('user/'+uid+'/'+map_name+'/walls').once('value').then((snapShot) => {
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "wall", false, node.x, node.y);
+                });
+            });
+        });
     }
 
     onKeyDown(event){

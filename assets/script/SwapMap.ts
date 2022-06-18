@@ -10,13 +10,27 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class SwapMap extends cc.Component {
 
+    @property(cc.Node)
+    map_root: cc.Node = null;
+
+    @property([cc.Node])
+    map: cc.Node[] = [];
+
+    @property([cc.Prefab])
+    map_prefab: cc.Prefab[] = [];
+
+    @property(cc.Node)
+    player: cc.Node = null;
+
+    map_number: number = 0;
+
     per_map_length: number = 5000;
 
-    swap_point: number = null;
+    swap_point: number = 0;
     
-    left_most_map: number = 1; // [1, 2, 3]
+    left_most_map: number = 0; // [0, 1, 2]
 
-    lock: boolean = true;
+    lock: boolean = false;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -24,34 +38,38 @@ export default class SwapMap extends cc.Component {
     }
     
     start () {
-        this.swap_point = cc.find("Canvas/map3").x; 
+        this.map_number = this.map.length;
+        this.swap_point = (this.map_number-1)*this.per_map_length;
+        // for debug
+        this.schedule(() => {
+            console.log("player(x):", Math.floor(this.player.x));
+            this.map.forEach((node, idx) => {
+                if(node == null) return;
+                console.log("map"+idx+"(x):", node.x);
+            });
+        }, 3);
     }
 
     update (dt) {
-        var player_x = cc.find("Canvas/player").x ;
+        this.swapMap();
+    }
 
-        if(player_x >= this.swap_point && this.lock){ // move the left most map to right most
-            this.lock = false;
-            switch(this.left_most_map){
-                case 1:
-                    this.swap_point = this.swap_point + this.per_map_length; // next swap point
-                    cc.find("Canvas/map1").x = this.swap_point;
-                    // console.log(cc.find("Canvas/map1/wall").x);
-                    this.left_most_map = 2;
-                    break;
-                case 2:
-                    this.swap_point = this.swap_point + this.per_map_length;
-                    cc.find("Canvas/map2").x = this.swap_point;
-                    this.left_most_map = 3;
-                    break;
-                case 3:
-                    this.swap_point = this.swap_point + this.per_map_length;
-                    cc.find("Canvas/map3").x = this.swap_point;
-                    this.left_most_map= 1;
-                    break;
-            }
-            this.lock = true;
-        }
+    swapMap(){
+        if(this.player.x < this.swap_point || this.lock) return;
 
+        this.lock = true;
+
+        this.swap_point += this.per_map_length;
+        let map_idx = this.left_most_map;
+        this.map[map_idx].destroy();
+        this.map[map_idx] = null;
+        this.scheduleOnce(() => {
+            this.map[map_idx] = cc.instantiate(this.map_prefab[map_idx]);
+            this.map[map_idx].setPosition(this.swap_point, 0);
+            this.map_root.addChild(this.map[map_idx]);
+        }, 1);
+        this.left_most_map = (this.left_most_map+1)%this.map_number;
+
+        this.lock = false;
     }
 }
