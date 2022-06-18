@@ -30,17 +30,6 @@ export default class EditorManager extends cc.Component {
     @property(cc.Node)
     camera: cc.Node = null;
 
-    @property(cc.Node)
-    boundary_node: cc.Node = null;
-    @property(cc.Node)
-    left_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    right_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    up_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    down_boundary_node: cc.Node = null;
-
     // prefab
     @property(cc.Prefab)
     player_prefab: cc.Prefab = null;
@@ -112,6 +101,16 @@ export default class EditorManager extends cc.Component {
     private spike2_parent_node: cc.Node = null;
     private spike3_parent_node: cc.Node = null;
     private spike4_parent_node: cc.Node = null;
+    private boundary_node: cc.Node = null;
+    private left_boundary_node: cc.Node = null;
+    private right_boundary_node: cc.Node = null;
+    private up_boundary_node: cc.Node = null;
+    private down_boundary_node: cc.Node = null;
+
+    // button node
+    private test_or_stop_node: cc.Node = null;
+    private store_node: cc.Node = null;
+    private menu_node: cc.Node = null;
 
     private player: cc.Node = null;
 
@@ -158,7 +157,6 @@ export default class EditorManager extends cc.Component {
 
         this.bindingParentNode();
         this.placeAllBlock();
-
         this.createBoundary();
 
         // let f = this.floor_parent_node.getChildByName("floor");
@@ -171,17 +169,20 @@ export default class EditorManager extends cc.Component {
         this.cameraFollow();
         this.updateDrag();
         this.updateColdTime(dt);
+        this.updateButton();
     }
 
     handleTestOrStopBtn(){
         if(this.is_drag || this.remaining_time_test_stop > 0.1) return;
         this.remaining_time_test_stop = this.cold_time_test_stop;
-        let label: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
+        let label1: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
+        let label2: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label/Label").getComponent(cc.Label);
         if(this.is_test){
             // stop the test
             console.log("Stop!");
             this.is_test = false;
-            label.string = "Test";
+            label1.string = "TEST";
+            label2.string = "TEST";
             this.player.getComponent(Player).playerDead();
             this.scheduleOnce(() => {
                 this.player.destroy();
@@ -192,7 +193,8 @@ export default class EditorManager extends cc.Component {
             // start the test
             console.log("Test!");
             this.is_test = true;
-            label.string = "Stop";
+            label1.string = "STOP";
+            label2.string = "STOP";
             this.player = cc.instantiate(this.player_prefab);
             cc.find("Canvas").addChild(this.player);
             this.toggleAllEnemyScript(true);
@@ -202,7 +204,7 @@ export default class EditorManager extends cc.Component {
     handleStoreBtn(){
         if(this.is_drag || this.is_test || this.remaining_time_store > 0.1) return;
         this.remaining_time_store = this.cold_time_store;
-        console.log("Store!");
+        console.log("Store to "+this.map_name+"!");
         let uid = firebase.auth().currentUser.uid;
 
         // floor
@@ -287,6 +289,7 @@ export default class EditorManager extends cc.Component {
     }
 
     handleMenuBtn(){
+        if(this.is_drag) return;
         cc.audioEngine.stopMusic();
         cc.director.loadScene("menu");
     }
@@ -490,6 +493,7 @@ export default class EditorManager extends cc.Component {
                 cp.bulletPrefab = this.bullet_prefab;
             }
             else{
+                i.getComponent(cc.RigidBody).angularVelocity = 0;
                 let cp = i.getComponent(Launcher);
                 i.setPosition(cp.pos_x, cp.pos_y);
                 i.stopAllActions();
@@ -665,10 +669,27 @@ export default class EditorManager extends cc.Component {
         this.mouse_y = event.getLocation().y;
     }
 
+    updateButton(){
+        if(this.is_drag) this.test_or_stop_node.active = false;
+        else this.test_or_stop_node.active = true;
+        if(this.is_drag || this.is_test) this.store_node.active = false;
+        else this.store_node.active = true;
+        if(this.is_drag) this.menu_node.active = false;
+        else this.menu_node.active = true;
+    }
+
     bindingParentNode(){
+        let canvas_node = cc.find("Canvas");
+        this.boundary_node = canvas_node.getChildByName("boundarys");
+        this.left_boundary_node = canvas_node.getChildByName("left_boundary");
+        this.right_boundary_node = canvas_node.getChildByName("right_boundary");
+        this.up_boundary_node = canvas_node.getChildByName("up_boundary");
+        this.down_boundary_node = canvas_node.getChildByName("down_boundary");
+
         let ground_node = cc.find("Canvas/ground");
         this.floor_parent_node = ground_node.getChildByName("floors");
         this.wall_parent_node = ground_node.getChildByName("walls");
+
         let enemies_node = cc.find("Canvas/enemies");
         this.search_light_parent_node = enemies_node.getChildByName("search_lights");
         this.launcher_parent_node = enemies_node.getChildByName("launchers");
@@ -681,6 +702,10 @@ export default class EditorManager extends cc.Component {
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
         this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+
+        this.test_or_stop_node = this.camera.getChildByName("test_or_stop");
+        this.store_node = this.camera.getChildByName("store");
+        this.menu_node = this.camera.getChildByName("menu");
     }
 
     placeAllBlock(){
