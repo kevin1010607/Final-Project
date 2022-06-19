@@ -15,16 +15,6 @@ declare const firebase: any
 export default class EditorPlayManager extends cc.Component {
 
     @property(cc.Node)
-    boundary_node: cc.Node = null;
-    @property(cc.Node)
-    left_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    right_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    up_boundary_node: cc.Node = null;
-    @property(cc.Node)
-    down_boundary_node: cc.Node = null;
-    @property(cc.Node)
     player: cc.Node = null;
 
     // prefab
@@ -60,6 +50,10 @@ export default class EditorPlayManager extends cc.Component {
     spike3_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     spike4_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    chain_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    gear_prefab: cc.Prefab = null;
 
     // enemies node
     private floor_parent_node: cc.Node = null;
@@ -75,6 +69,13 @@ export default class EditorPlayManager extends cc.Component {
     private spike2_parent_node: cc.Node = null;
     private spike3_parent_node: cc.Node = null;
     private spike4_parent_node: cc.Node = null;
+    private chain_parent_node: cc.Node = null;
+    private gear_parent_node: cc.Node = null;
+    private boundary_node: cc.Node = null;
+    private left_boundary_node: cc.Node = null;
+    private right_boundary_node: cc.Node = null;
+    private up_boundary_node: cc.Node = null;
+    private down_boundary_node: cc.Node = null;
 
     // background boundary
     private left_boundary: number = -1000;
@@ -99,7 +100,6 @@ export default class EditorPlayManager extends cc.Component {
     start () {
         this.bindingParentNode();
         this.placeAllBlock();
-
         this.createBoundary();
     }
 
@@ -174,15 +174,33 @@ export default class EditorPlayManager extends cc.Component {
             object.setPosition(x, y);
             this.spike4_parent_node.addChild(object);
         }
+        else if(prefab_name == "chain"){
+            object = cc.instantiate(this.chain_prefab);
+            object.setPosition(x, y);
+            this.chain_parent_node.addChild(object);
+        }
+        else if(prefab_name == "gear"){
+            object = cc.instantiate(this.gear_prefab);
+            object.setPosition(x, y);
+            this.gear_parent_node.addChild(object);
+        }
         else{
             return;
         }
     }
 
     bindingParentNode(){
+        let canvas_node = cc.find("Canvas");
+        this.boundary_node = canvas_node.getChildByName("boundarys");
+        this.left_boundary_node = canvas_node.getChildByName("left_boundary");
+        this.right_boundary_node = canvas_node.getChildByName("right_boundary");
+        this.up_boundary_node = canvas_node.getChildByName("up_boundary");
+        this.down_boundary_node = canvas_node.getChildByName("down_boundary");
+
         let ground_node = cc.find("Canvas/ground");
         this.floor_parent_node = ground_node.getChildByName("floors");
         this.wall_parent_node = ground_node.getChildByName("walls");
+
         let enemies_node = cc.find("Canvas/enemies");
         this.search_light_parent_node = enemies_node.getChildByName("search_lights");
         this.launcher_parent_node = enemies_node.getChildByName("launchers");
@@ -195,6 +213,8 @@ export default class EditorPlayManager extends cc.Component {
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
         this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+        this.chain_parent_node = enemies_node.getChildByName("chains");
+        this.gear_parent_node = enemies_node.getChildByName("gears");
     }
 
     placeAllBlock(){
@@ -290,6 +310,20 @@ export default class EditorPlayManager extends cc.Component {
                 if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
                     this.createBlock("spike4", node.x, node.y);
+                });
+            });
+            // chain
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/chains').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.createBlock("chain", node.x, node.y);
+                });
+            });
+            // gear
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/gears').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.createBlock("gear", node.x, node.y);
                 });
             });
         });

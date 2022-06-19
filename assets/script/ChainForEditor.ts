@@ -8,10 +8,9 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Gear extends cc.Component {
+export default class ChainForEditor extends cc.Component {
 
-    @property
-    move_direction: number = 0;
+    move_time: number = 0.6; // circle
 
     // for editor
     pos_x: number = 0;
@@ -25,17 +24,15 @@ export default class Gear extends cc.Component {
         // for editor
         this.pos_x = this.node.x, this.pos_y = this.node.y;
 
-        if(this.move_direction == 0){
-            var action = cc.repeatForever(cc.rotateBy(1, 90));
-            this.node.runAction(action);
-        }
-        else{
-            var action = cc.repeatForever(cc.rotateBy(1, -90));
-            this.node.runAction(action);
-        }
+        let action = cc.sequence(cc.rotateBy(this.move_time, -150), cc.moveBy(2, 0, 0), cc.rotateBy(this.move_time, 150), cc.moveBy(2, 0, 0)).repeatForever();
+        this.node.runAction(action);
     }
-    
-    update (dt) {
 
+    // update (dt) {}
+
+    onBeginContact(contact, selfCollider, otherCollider) {
+        if(otherCollider.node.name == "player"){
+            otherCollider.node.getComponent("Player").playerDead();
+        }
     }
 }

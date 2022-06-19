@@ -15,6 +15,8 @@ import Box from "./Box";
 import Fake from "./Fake";
 import DynamicSpike from "./DynamicSpike";
 import StaticSpike from "./StaticSpike";
+import ChainForEditor from "./ChainForEditor";
+import Gear from "./Gear";
 
 const {ccclass, property} = cc._decorator;
 declare const firebase: any
@@ -63,6 +65,10 @@ export default class EditorManager extends cc.Component {
     spike3_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     spike4_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    chain_prefab: cc.Prefab = null;
+    @property(cc.Prefab)
+    gear_prefab: cc.Prefab = null;
 
     // search light property
     @property(cc.Prefab)
@@ -87,6 +93,16 @@ export default class EditorManager extends cc.Component {
     @property(cc.AudioClip)
     spike_down_audioclip: cc.AudioClip = null;
 
+    // toolbar button spriteframe
+    @property(cc.SpriteFrame)
+    toolbar_btn_close_spriteframe: cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    toolbar_btn_close_hover_spriteframe: cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    toolbar_btn_open_spriteframe: cc.SpriteFrame = null;
+    @property(cc.SpriteFrame)
+    toolbar_btn_open_hover_spriteframe: cc.SpriteFrame = null;
+
     // enemies node
     private floor_parent_node: cc.Node = null;
     private wall_parent_node: cc.Node = null;
@@ -101,6 +117,8 @@ export default class EditorManager extends cc.Component {
     private spike2_parent_node: cc.Node = null;
     private spike3_parent_node: cc.Node = null;
     private spike4_parent_node: cc.Node = null;
+    private chain_parent_node: cc.Node = null;
+    private gear_parent_node: cc.Node = null;
     private boundary_node: cc.Node = null;
     private left_boundary_node: cc.Node = null;
     private right_boundary_node: cc.Node = null;
@@ -111,6 +129,9 @@ export default class EditorManager extends cc.Component {
     private test_or_stop_node: cc.Node = null;
     private store_node: cc.Node = null;
     private menu_node: cc.Node = null;
+
+    private toolbar_node: cc.Node = null;
+    private toolbar_btn_node: cc.Node = null;
 
     private player: cc.Node = null;
 
@@ -130,6 +151,7 @@ export default class EditorManager extends cc.Component {
     private is_drag: boolean = false;
     private mouse_x: number = 0;
     private mouse_y: number = 0;
+    private is_toolbar_close: boolean = true;
 
     private cold_time_test_stop: number = 1;
     private remaining_time_test_stop: number = 0;
@@ -286,12 +308,49 @@ export default class EditorManager extends cc.Component {
             spike4s.push({x: i.x, y: i.y});
         });
         firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').set(spike4s);
+
+        let chains = [];
+        this.chain_parent_node.children.forEach((i) => {
+            chains.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/chains').set(chains);
+
+        let gears = [];
+        this.gear_parent_node.children.forEach((i) => {
+            gears.push({x: i.x, y: i.y});
+        });
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/gears').set(gears);
     }
 
     handleMenuBtn(){
         if(this.is_drag) return;
         cc.audioEngine.stopMusic();
         cc.director.loadScene("menu");
+    }
+
+    handleToolBarBtn(){
+        let btn = this.toolbar_btn_node.getComponent(cc.Button);
+        let btn_bg = this.toolbar_btn_node.getChildByName("Background").getComponent(cc.Sprite);
+        if(this.is_toolbar_close){
+            // open toolbar   
+            this.is_toolbar_close = false;
+            let action = cc.moveBy(0.5, -400, 0);
+            this.toolbar_node.runAction(action);
+            btn_bg.spriteFrame = this.toolbar_btn_open_spriteframe;
+            btn.normalSprite = this.toolbar_btn_open_spriteframe;
+            btn.pressedSprite = this.toolbar_btn_open_spriteframe;
+            btn.hoverSprite = this.toolbar_btn_open_hover_spriteframe;
+        }
+        else{
+            // close toolbar
+            this.is_toolbar_close = true;
+            let action = cc.moveBy(0.5, 400, 0);
+            this.toolbar_node.runAction(action);
+            btn_bg.spriteFrame = this.toolbar_btn_close_spriteframe;
+            btn.normalSprite = this.toolbar_btn_close_spriteframe;
+            btn.pressedSprite = this.toolbar_btn_close_spriteframe;
+            btn.hoverSprite = this.toolbar_btn_close_hover_spriteframe;
+        }
     }
 
     handleBtn(event, prefab_name, drag=true, x=null, y=null){
@@ -388,12 +447,28 @@ export default class EditorManager extends cc.Component {
             this.spike4_parent_node.addChild(object);
             if(drag) object.getComponent(cc.RigidBody).active = false;
         }
+        else if(prefab_name == "chain" && !this.is_test){
+            object = cc.instantiate(this.chain_prefab);
+            if(x && y) object.setPosition(x, y);
+            object.getComponent(ChainForEditor).destroy();
+            this.chain_parent_node.addChild(object);
+            if(drag) object.getComponent(cc.RigidBody).active = false;
+            object.rotation = 75;
+        }
+        else if(prefab_name == "gear" && !this.is_test){
+            object = cc.instantiate(this.gear_prefab);
+            if(x && y) object.setPosition(x, y);
+            object.getComponent(Gear).destroy();
+            this.gear_parent_node.addChild(object);
+            if(drag) object.getComponent(cc.RigidBody).active = false;
+        }
         else{
             return;
         }
 
         object.on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.changeToDragOrCancel(e, object);});
         if(drag){
+            this.handleToolBarBtn();
             object.opacity = 180;
             this.drag_object = object;
             this.scheduleOnce(() => {
@@ -431,8 +506,19 @@ export default class EditorManager extends cc.Component {
 
     changeToDragOrCancel(event, node: cc.Node){
         if(this.is_drag) return;
+
+        // overlap with button
+        let x = event.getLocation().x-480, y = event.getLocation().y-320;
+        if(x>=-410-48 && x<=-410+48 && y>=290-24 && y<=290+24) return;
+        if(x>=-410-48 && x<=-410+48 && y>=240-24 && y<=240+24 && !this.is_test) return;
+        if(x>=-410-48 && x<=-410+48 && y>=190-24 && y<=190+24) return;
+        if(x>=467.5-12.5 && x<=467.5+12.5 && y>=0-50 && y<=0+50 && this.is_toolbar_close) return;
+        if(x>=67.5-12.5 && x<=67.5+12.5 && y>=0-50 && y<=0+50 && !this.is_toolbar_close) return;
+        if(x>=280-200 && x<=280+200 && y>=0-300 && y<=0+300 && !this.is_toolbar_close) return;
+
         // left button
         if(event.getButton() == 0){
+            if(this.drag_object) this.drag_object.opacity = 255;
             this.drag_object = node;
             this.drag_object.opacity = 180;
             
@@ -463,6 +549,8 @@ export default class EditorManager extends cc.Component {
         this.toggleSpike2Script(enabled);
         this.toggleSpike3Script(enabled);
         this.toggleSpike4Script(enabled);
+        this.toggleChainScript(enabled);
+        this.toggleGearScript(enabled);
     }
 
     toggleSearchLightScript(enabled: boolean){
@@ -654,6 +742,37 @@ export default class EditorManager extends cc.Component {
         });
     }
 
+    toggleChainScript(enabled: boolean){
+        this.chain_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(ChainForEditor);
+            }
+            else{
+                i.rotation = 75;
+                let cp = i.getComponent(ChainForEditor);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
+    toggleGearScript(enabled: boolean){
+        this.gear_parent_node.children.forEach((i) => {
+            if(enabled){
+                let cp = i.addComponent(Gear);
+            }
+            else{
+                let cp = i.getComponent(Gear);
+                i.setPosition(cp.pos_x, cp.pos_y);
+                i.stopAllActions();
+                cp.unscheduleAllCallbacks();
+                cp.destroy();
+            }
+        });
+    }
+
     updateColdTime(dt){
         this.remaining_time_test_stop = Math.max(0, this.remaining_time_test_stop-dt);
         this.remaining_time_store = Math.max(0, this.remaining_time_store-dt);
@@ -702,10 +821,15 @@ export default class EditorManager extends cc.Component {
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
         this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+        this.chain_parent_node = enemies_node.getChildByName("chains");
+        this.gear_parent_node = enemies_node.getChildByName("gears");
 
         this.test_or_stop_node = this.camera.getChildByName("test_or_stop");
         this.store_node = this.camera.getChildByName("store");
         this.menu_node = this.camera.getChildByName("menu");
+
+        this.toolbar_node = this.camera.getChildByName("toolbar");
+        this.toolbar_btn_node = this.toolbar_node.getChildByName("toolbar_btn");
     }
 
     placeAllBlock(){
@@ -801,6 +925,20 @@ export default class EditorManager extends cc.Component {
                 if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
                     this.handleBtn(null, "spike4", false, node.x, node.y);
+                });
+            });
+            // chain
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/chains').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "chain", false, node.x, node.y);
+                });
+            });
+            // gear
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/gears').once('value').then((snapShot) => {
+                if(snapShot.val() == null) return;
+                snapShot.val().forEach((node) => {
+                    this.handleBtn(null, "gear", false, node.x, node.y);
                 });
             });
         });
