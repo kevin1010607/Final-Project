@@ -1214,7 +1214,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "spike4s",
+    "_name": "platforms",
     "_objFlags": 0,
     "_parent": {
       "__id__": 10
@@ -4274,8 +4274,8 @@
     "spike3_prefab": {
       "__uuid__": "b9743570-a8fc-405d-9817-4e225b0f8b2c"
     },
-    "spike4_prefab": {
-      "__uuid__": "5dd98163-589a-47f2-a544-bbbb488d1ed6"
+    "platform_prefab": {
+      "__uuid__": "a6873034-7f4c-4be3-86cd-4790b23dc47c"
     },
     "chain_prefab": {
       "__uuid__": "7ba6ede3-367c-4070-ab7f-c1ba22ca576e"

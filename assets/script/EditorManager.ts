@@ -64,7 +64,7 @@ export default class EditorManager extends cc.Component {
     @property(cc.Prefab)
     spike3_prefab: cc.Prefab = null;
     @property(cc.Prefab)
-    spike4_prefab: cc.Prefab = null;
+    platform_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     chain_prefab: cc.Prefab = null;
     @property(cc.Prefab)
@@ -116,7 +116,7 @@ export default class EditorManager extends cc.Component {
     private spike1_parent_node: cc.Node = null;
     private spike2_parent_node: cc.Node = null;
     private spike3_parent_node: cc.Node = null;
-    private spike4_parent_node: cc.Node = null;
+    private platform_parent_node: cc.Node = null;
     private chain_parent_node: cc.Node = null;
     private gear_parent_node: cc.Node = null;
     private boundary_node: cc.Node = null;
@@ -220,6 +220,7 @@ export default class EditorManager extends cc.Component {
             this.player = cc.instantiate(this.player_prefab);
             cc.find("Canvas").addChild(this.player);
             this.toggleAllEnemyScript(true);
+            if(!this.is_toolbar_close) this.handleToolBarBtn();
         }
     }
 
@@ -303,11 +304,11 @@ export default class EditorManager extends cc.Component {
         });
         firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike3s').set(spike3s);
 
-        let spike4s = [];
-        this.spike4_parent_node.children.forEach((i) => {
-            spike4s.push({x: i.x, y: i.y});
+        let platforms = [];
+        this.platform_parent_node.children.forEach((i) => {
+            platforms.push({x: i.x, y: i.y});
         });
-        firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').set(spike4s);
+        firebase.database().ref('user/'+uid+'/'+this.map_name+'/platforms').set(platforms);
 
         let chains = [];
         this.chain_parent_node.children.forEach((i) => {
@@ -440,11 +441,10 @@ export default class EditorManager extends cc.Component {
             if(drag) object.getComponent(cc.RigidBody).active = false;
             object.rotation = 180;
         }
-        else if(prefab_name == "spike4" && !this.is_test){
-            object = cc.instantiate(this.spike4_prefab);
+        else if(prefab_name == "platform" && !this.is_test){
+            object = cc.instantiate(this.platform_prefab);
             if(x && y) object.setPosition(x, y);
-            object.getComponent(StaticSpike).destroy();
-            this.spike4_parent_node.addChild(object);
+            this.platform_parent_node.addChild(object);
             if(drag) object.getComponent(cc.RigidBody).active = false;
         }
         else if(prefab_name == "chain" && !this.is_test){
@@ -548,7 +548,6 @@ export default class EditorManager extends cc.Component {
         this.toggleSpike1Script(enabled);
         this.toggleSpike2Script(enabled);
         this.toggleSpike3Script(enabled);
-        this.toggleSpike4Script(enabled);
         this.toggleChainScript(enabled);
         this.toggleGearScript(enabled);
     }
@@ -726,22 +725,6 @@ export default class EditorManager extends cc.Component {
         });
     }
 
-    toggleSpike4Script(enabled: boolean){
-        this.spike4_parent_node.children.forEach((i) => {
-            if(enabled){
-                let cp = i.addComponent(StaticSpike);
-                cp.direction = 1;
-            }
-            else{
-                let cp = i.getComponent(StaticSpike);
-                i.setPosition(cp.pos_x, cp.pos_y);
-                i.stopAllActions();
-                cp.unscheduleAllCallbacks();
-                cp.destroy();
-            }
-        });
-    }
-
     toggleChainScript(enabled: boolean){
         this.chain_parent_node.children.forEach((i) => {
             if(enabled){
@@ -795,6 +778,8 @@ export default class EditorManager extends cc.Component {
         else this.store_node.active = true;
         if(this.is_drag) this.menu_node.active = false;
         else this.menu_node.active = true;
+        if(this.is_drag || this.is_test) this.toolbar_btn_node.active = false;
+        else this.toolbar_btn_node.active = true;
     }
 
     bindingParentNode(){
@@ -820,7 +805,7 @@ export default class EditorManager extends cc.Component {
         this.spike1_parent_node = enemies_node.getChildByName("spike1s");
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
-        this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+        this.platform_parent_node = enemies_node.getChildByName("platforms");
         this.chain_parent_node = enemies_node.getChildByName("chains");
         this.gear_parent_node = enemies_node.getChildByName("gears");
 
@@ -920,11 +905,11 @@ export default class EditorManager extends cc.Component {
                     this.handleBtn(null, "spike3", false, node.x, node.y);
                 });
             });
-            // spike4
-            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').once('value').then((snapShot) => {
+            // platform
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/platforms').once('value').then((snapShot) => {
                 if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
-                    this.handleBtn(null, "spike4", false, node.x, node.y);
+                    this.handleBtn(null, "platform", false, node.x, node.y);
                 });
             });
             // chain

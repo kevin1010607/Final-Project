@@ -49,7 +49,7 @@ export default class EditorPlayManager extends cc.Component {
     @property(cc.Prefab)
     spike3_prefab: cc.Prefab = null;
     @property(cc.Prefab)
-    spike4_prefab: cc.Prefab = null;
+    platform_prefab: cc.Prefab = null;
     @property(cc.Prefab)
     chain_prefab: cc.Prefab = null;
     @property(cc.Prefab)
@@ -68,7 +68,7 @@ export default class EditorPlayManager extends cc.Component {
     private spike1_parent_node: cc.Node = null;
     private spike2_parent_node: cc.Node = null;
     private spike3_parent_node: cc.Node = null;
-    private spike4_parent_node: cc.Node = null;
+    private platform_parent_node: cc.Node = null;
     private chain_parent_node: cc.Node = null;
     private gear_parent_node: cc.Node = null;
     private boundary_node: cc.Node = null;
@@ -169,10 +169,10 @@ export default class EditorPlayManager extends cc.Component {
             object.rotation = 180;
             object.getComponent(StaticSpike).direction = 0;
         }
-        else if(prefab_name == "spike4"){
-            object = cc.instantiate(this.spike4_prefab);
+        else if(prefab_name == "platform"){
+            object = cc.instantiate(this.platform_prefab);
             object.setPosition(x, y);
-            this.spike4_parent_node.addChild(object);
+            this.platform_parent_node.addChild(object);
         }
         else if(prefab_name == "chain"){
             object = cc.instantiate(this.chain_prefab);
@@ -212,7 +212,7 @@ export default class EditorPlayManager extends cc.Component {
         this.spike1_parent_node = enemies_node.getChildByName("spike1s");
         this.spike2_parent_node = enemies_node.getChildByName("spike2s");
         this.spike3_parent_node = enemies_node.getChildByName("spike3s");
-        this.spike4_parent_node = enemies_node.getChildByName("spike4s");
+        this.platform_parent_node = enemies_node.getChildByName("platforms");
         this.chain_parent_node = enemies_node.getChildByName("chains");
         this.gear_parent_node = enemies_node.getChildByName("gears");
     }
@@ -305,11 +305,11 @@ export default class EditorPlayManager extends cc.Component {
                     this.createBlock("spike3", node.x, node.y);
                 });
             });
-            // spike4
-            firebase.database().ref('user/'+uid+'/'+this.map_name+'/spike4s').once('value').then((snapShot) => {
+            // platform
+            firebase.database().ref('user/'+uid+'/'+this.map_name+'/platforms').once('value').then((snapShot) => {
                 if(snapShot.val() == null) return;
                 snapShot.val().forEach((node) => {
-                    this.createBlock("spike4", node.x, node.y);
+                    this.createBlock("platform", node.x, node.y);
                 });
             });
             // chain
