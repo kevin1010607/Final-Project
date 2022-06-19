@@ -59,6 +59,41 @@ export default class Button extends cc.Component {
         }
 
     }
+
+    onEndContact(contact, self, other){
+        if(other.node.name == "player" || other.node.name == "box" || other.node.name == "player_02"){ 
+            if(this.is_push == false){
+                return;
+            }
+            this.is_push = false;
+            
+    
+            let finished = cc.callFunc(function(){
+                this.node.getChildByName("door").getComponent("Door").close(); 
+            }, this);
+        
+            let action;
+            if(this.move_direction == 0 && contact.getWorldManifold().normal.y >= 0.9){
+                action = cc.sequence(cc.moveBy(0.3, 0, this.move_amount), finished);
+                this.node.runAction(action);
+                this.is_push = true;
+            }
+            if(this.move_direction == 1 && contact.getWorldManifold().normal.y <= -0.9){
+                action = cc.sequence(cc.moveBy(0.3, 0, -this.move_amount), finished);
+                this.node.runAction(action);
+                this.is_push = true;
+            }
+            if(this.move_direction == 2 && contact.getWorldManifold().normal.x >= 0.9){
+                action = cc.sequence(cc.moveBy(0.3, this.move_amount, 0), finished);
+                this.node.runAction(action);
+                this.is_push = true;
+            } 
+            
+            
+        }
+
+    }
+
     
     // update (dt) {
 

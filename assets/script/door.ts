@@ -31,6 +31,8 @@ export default class Door extends cc.Component {
     @property
     duration: number = 1.5;
 
+    AudioID: number = null;
+
     onLoad () {
         
     }
@@ -51,7 +53,21 @@ export default class Door extends cc.Component {
         if (this.move_direction == 3) action = cc.moveBy(this.duration, this.move_amount, 0);
 
         this.node.runAction(action);
-        let id = cc.audioEngine.playEffect(this.open_effect, false);
-        cc.audioEngine.setVolume(id, this.volume);
+        if (this.AudioID != null)cc.audioEngine.stopEffect(this.AudioID);
+        this.AudioID = cc.audioEngine.playEffect(this.open_effect, false);
+        cc.audioEngine.setVolume(this.AudioID, this.volume);
+    }
+
+    close(){
+        let action;
+        if (this.move_direction == 0) action = cc.moveBy(this.duration, 0, this.move_amount);
+        if (this.move_direction == 1) action = cc.moveBy(this.duration, 0, -this.move_amount);
+        if (this.move_direction == 2) action = cc.moveBy(this.duration, this.move_amount, 0);
+        if (this.move_direction == 3) action = cc.moveBy(this.duration, -this.move_amount, 0);
+
+        this.node.runAction(action);
+        if (this.AudioID != null)cc.audioEngine.stopEffect(this.AudioID);
+        this.AudioID = cc.audioEngine.playEffect(this.open_effect, false);
+        cc.audioEngine.setVolume(this.AudioID, this.volume);
     }
 }

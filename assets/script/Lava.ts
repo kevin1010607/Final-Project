@@ -70,7 +70,7 @@ export default class Lava extends cc.Component {
     }
 
     onBeginContact(contact, self, other){
-        if(other.node.name == "player"){
+        if(other.node.name == "player" || other.node.name == "player_02"){
             this.scheduleOnce(function(){other.node.getComponent("Player").playerDead();}, 0.05);
         }
     }

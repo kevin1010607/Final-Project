@@ -11,20 +11,20 @@ const {ccclass, property} = cc._decorator;
 export default class Camera extends cc.Component {
 
     // LIFE-CYCLE CALLBACKS:
+    player_node: cc.Node = null;
 
     // onLoad () {}
 
     start () {
-
+        this.player_node = cc.find("Canvas/player");
     }
 
     update(dt){
         // for the editor scene
-        let player_node = cc.find("Canvas/player");
-        if(player_node == null) return;
+        if(this.player_node == null) return;
 
-        if(player_node.getComponent("Player").is_Dead == false){
-            let target_positon = player_node.getPosition();
+        if(this.player_node.getComponent("Player").is_Dead == false){
+            let target_positon = this.player_node.getPosition();
             let cur_position = this.node.getPosition();
             cur_position.lerp(target_positon, 0.1, cur_position);
             this.node.setPosition(cur_position);
