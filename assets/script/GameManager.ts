@@ -51,6 +51,7 @@ export default class GameManager extends cc.Component {
     }
 
     start() {
+        cc.audioEngine.stopAllEffects();
         this.audioID = cc.audioEngine.playMusic(this.background_music, true);
         cc.audioEngine.setVolume(this.audioID, this.volumn);
         this.pause_btn.node.active = true;
