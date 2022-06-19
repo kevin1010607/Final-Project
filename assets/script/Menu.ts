@@ -38,6 +38,9 @@ export default class Menu extends cc.Component {
     @property(cc.Button)
     enterButtonEdit: cc.Button = null;
 
+    @property(cc.Button)
+    enterButtonMulti: cc.Button = null;
+
     @property(cc.Sprite)
     underBoard: cc.Sprite = null;
 
@@ -420,6 +423,12 @@ export default class Menu extends cc.Component {
         this.cancelButtonEdit.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
             cc.audioEngine.playEffect(this.button2_effect, false);
             this.closeEdit();
+        }, this);
+
+
+        this.enterButtonMulti.node.on(cc.Node.EventType.MOUSE_DOWN, () => {
+            cc.audioEngine.playEffect(this.button2_effect, false);
+            cc.director.loadScene("multi_player");
         }, this);
 
 
