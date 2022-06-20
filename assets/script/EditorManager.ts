@@ -26,6 +26,12 @@ export default class EditorManager extends cc.Component {
 
     @property(cc.AudioClip)
     bgm: cc.AudioClip = null;
+    @property(cc.AudioClip)
+    button_effect: cc.AudioClip = null;
+    @property(cc.AudioClip)
+    button2_effect: cc.AudioClip = null;
+    @property(cc.AudioClip)
+    button3_effect: cc.AudioClip = null;
     @property(cc.Canvas)
     canvas: cc.Canvas = null;
 
@@ -133,6 +139,9 @@ export default class EditorManager extends cc.Component {
     private toolbar_node: cc.Node = null;
     private toolbar_btn_node: cc.Node = null;
 
+    private question_node: cc.Node = null;
+    private question_btn_node: cc.Node = null;
+
     private player: cc.Node = null;
 
     // keyboard
@@ -152,6 +161,7 @@ export default class EditorManager extends cc.Component {
     private mouse_x: number = 0;
     private mouse_y: number = 0;
     private is_toolbar_close: boolean = true;
+    private is_question_close: boolean = true;
 
     private cold_time_test_stop: number = 1;
     private remaining_time_test_stop: number = 0;
@@ -199,12 +209,16 @@ export default class EditorManager extends cc.Component {
         this.remaining_time_test_stop = this.cold_time_test_stop;
         let label1: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label").getComponent(cc.Label);
         let label2: cc.Label = cc.find("Canvas/Main Camera/test_or_stop/Background/Label/Label").getComponent(cc.Label);
+        let label3: cc.Label = cc.find("Canvas/Main Camera/mode").getComponent(cc.Label);
+        let label4: cc.Label = cc.find("Canvas/Main Camera/mode/Label").getComponent(cc.Label);
         if(this.is_test){
             // stop the test
             console.log("Stop!");
             this.is_test = false;
             label1.string = "TEST";
             label2.string = "TEST";
+            label3.string = "Edit Mode";
+            label4.string = "Edit Mode";
             this.player.getComponent(Player).playerDead();
             this.scheduleOnce(() => {
                 this.player.destroy();
@@ -217,11 +231,14 @@ export default class EditorManager extends cc.Component {
             this.is_test = true;
             label1.string = "STOP";
             label2.string = "STOP";
+            label3.string = "Test Mode";
+            label4.string = "Test Mode";
             this.player = cc.instantiate(this.player_prefab);
             cc.find("Canvas").addChild(this.player);
             this.toggleAllEnemyScript(true);
             if(!this.is_toolbar_close) this.handleToolBarBtn();
         }
+        cc.audioEngine.playEffect(this.button3_effect, false);
     }
 
     handleStoreBtn(){
@@ -229,6 +246,8 @@ export default class EditorManager extends cc.Component {
         this.remaining_time_store = this.cold_time_store;
         console.log("Store to "+this.map_name+"!");
         let uid = firebase.auth().currentUser.uid;
+
+        cc.audioEngine.playEffect(this.button3_effect, false);
 
         // floor
         let floors = [];
@@ -325,11 +344,12 @@ export default class EditorManager extends cc.Component {
 
     handleMenuBtn(){
         if(this.is_drag) return;
+        cc.audioEngine.playEffect(this.button3_effect, false);
         cc.audioEngine.stopMusic();
         cc.director.loadScene("menu");
     }
 
-    handleToolBarBtn(){
+    handleToolBarBtn(event=null, str="false"){
         let btn = this.toolbar_btn_node.getComponent(cc.Button);
         let btn_bg = this.toolbar_btn_node.getChildByName("Background").getComponent(cc.Sprite);
         if(this.is_toolbar_close){
@@ -341,6 +361,7 @@ export default class EditorManager extends cc.Component {
             btn.normalSprite = this.toolbar_btn_open_spriteframe;
             btn.pressedSprite = this.toolbar_btn_open_spriteframe;
             btn.hoverSprite = this.toolbar_btn_open_hover_spriteframe;
+            cc.audioEngine.playEffect(this.button_effect, false);
         }
         else{
             // close toolbar
@@ -351,11 +372,33 @@ export default class EditorManager extends cc.Component {
             btn.normalSprite = this.toolbar_btn_close_spriteframe;
             btn.pressedSprite = this.toolbar_btn_close_spriteframe;
             btn.hoverSprite = this.toolbar_btn_close_hover_spriteframe;
+            if(str == "true") cc.audioEngine.playEffect(this.button2_effect, false);
         }
+    }
+
+    loadQuestionBoard() {
+        cc.audioEngine.playEffect(this.button_effect, false);
+        this.is_question_close = false;
+        this.question_node.active = true;
+        this.question_node.scale = 0;
+        let scaleTo = cc.scaleTo(0.5, 1);
+        this.question_node.runAction(scaleTo);
+    }
+
+    closeQuestionBoard() {
+        cc.audioEngine.playEffect(this.button2_effect, false);
+        this.is_question_close = true;
+        let scaleTo = cc.scaleTo(0.5, 0);
+        this.question_node.runAction(scaleTo);
+        this.scheduleOnce(() => {
+            this.question_node.active = false;
+        }, 0.5);
     }
 
     handleBtn(event, prefab_name, drag=true, x=null, y=null){
         if(this.is_drag) return;
+
+        if(drag) cc.audioEngine.playEffect(this.button3_effect, false);
 
         let object: cc.Node;
         if(prefab_name == "floor"){
@@ -505,7 +548,7 @@ export default class EditorManager extends cc.Component {
     }
 
     changeToDragOrCancel(event, node: cc.Node){
-        if(this.is_drag) return;
+        if(this.is_drag || !this.is_question_close) return;
 
         // overlap with button
         let x = event.getLocation().x-480, y = event.getLocation().y-320;
@@ -515,6 +558,7 @@ export default class EditorManager extends cc.Component {
         if(x>=467.5-12.5 && x<=467.5+12.5 && y>=0-50 && y<=0+50 && this.is_toolbar_close) return;
         if(x>=67.5-12.5 && x<=67.5+12.5 && y>=0-50 && y<=0+50 && !this.is_toolbar_close) return;
         if(x>=280-200 && x<=280+200 && y>=0-300 && y<=0+300 && !this.is_toolbar_close) return;
+        if(x>=440-25 && x<=440+25 && y>=275-25 && y<=275+25 && this.is_question_close) return;
 
         // left button
         if(event.getButton() == 0){
@@ -772,14 +816,16 @@ export default class EditorManager extends cc.Component {
     }
 
     updateButton(){
-        if(this.is_drag) this.test_or_stop_node.active = false;
+        if(this.is_drag || !this.is_question_close) this.test_or_stop_node.active = false;
         else this.test_or_stop_node.active = true;
-        if(this.is_drag || this.is_test) this.store_node.active = false;
+        if(this.is_drag || this.is_test || !this.is_question_close) this.store_node.active = false;
         else this.store_node.active = true;
-        if(this.is_drag) this.menu_node.active = false;
+        if(this.is_drag || !this.is_question_close) this.menu_node.active = false;
         else this.menu_node.active = true;
-        if(this.is_drag || this.is_test) this.toolbar_btn_node.active = false;
+        if(this.is_drag || this.is_test || !this.is_question_close) this.toolbar_btn_node.active = false;
         else this.toolbar_btn_node.active = true;
+        if(this.is_drag || this.is_test || !this.is_toolbar_close || !this.is_question_close) this.question_btn_node.active = false;
+        else this.question_btn_node.active = true;
     }
 
     bindingParentNode(){
@@ -815,6 +861,9 @@ export default class EditorManager extends cc.Component {
 
         this.toolbar_node = this.camera.getChildByName("toolbar");
         this.toolbar_btn_node = this.toolbar_node.getChildByName("toolbar_btn");
+
+        this.question_node = this.camera.getChildByName("question_board");
+        this.question_btn_node = this.camera.getChildByName("question");
     }
 
     placeAllBlock(){
