@@ -9,7 +9,7 @@
   "genMipmaps": false,
   "packable": true,
   "width": 130,
-  "height": 520,
+  "height": 519,
   "platformSettings": {},
   "subMetas": {
     "button7hover": {
@@ -25,9 +25,9 @@
       "trimX": 0,
       "trimY": 0,
       "width": 130,
-      "height": 520,
+      "height": 519,
       "rawWidth": 130,
-      "rawHeight": 520,
+      "rawHeight": 519,
       "borderTop": 0,
       "borderBottom": 0,
       "borderLeft": 0,
