@@ -97,9 +97,6 @@
       },
       {
         "__id__": 1486
-      },
-      {
-        "__id__": 1487
       }
     ],
     "_prefab": null,
@@ -59623,19 +59620,5 @@
     "_originalWidth": 0,
     "_originalHeight": 0,
     "_id": "aahN+TA3xHCK3dQLvPu6Xa"
-  },
-  {
-    "__type__": "fb5baRA131H9YdPd8Fq9Z9v",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 2
-    },
-    "_enabled": true,
-    "map_root": null,
-    "map": [],
-    "map_prefab": [],
-    "player": null,
-    "_id": "99SQi7jwhJ9ZGLXf3SZEx+"
   }
 ]
