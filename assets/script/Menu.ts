@@ -171,7 +171,10 @@ export default class Menu extends cc.Component {
                 return data[b].score - data[a].score;
             });
             CC.log(sorted.length);
-            for (var i = 0; i < sorted.length; i++) {
+            let n = sorted.length;
+            if (n > 6)
+                n = 6;
+            for (var i = 0; i < n; i++) {
                 CC.find("Canvas/leaderboard/name_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].name.toUpperCase());
                 CC.find("Canvas/leaderboard/score_" + String(i + 1)).getComponent(cc.Label).string = String(data[sorted[i]].score);
             }
