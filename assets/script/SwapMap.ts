@@ -42,10 +42,10 @@ export default class SwapMap extends cc.Component {
         this.swap_point = (this.map_number-1)*this.per_map_length;
         // for debug
         this.schedule(() => {
-            console.log("player(x):", Math.floor(this.player.x));
+            // console.log("player(x):", Math.floor(this.player.x));
             this.map.forEach((node, idx) => {
                 if(node == null) return;
-                console.log("map"+idx+"(x):", node.x);
+                // console.log("map"+idx+"(x):", node.x);
             });
         }, 3);
     }
