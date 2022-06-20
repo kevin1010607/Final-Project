@@ -85,12 +85,14 @@ export default class SearchLight extends cc.Component {
         let light_y = this.light.y * this.light.scaleY * this.node.scaleY;
 
         // light Triangle points (p1: top, p2: bottom left, p3: bottom right)
-        let p1_x = this.node.x;
+        let p1_x = this.node.x + this.node.getParent().x;
         let p1_y = this.node.y + light_y + light_h / 2;
-        let p2_x = this.node.x - light_w / 2;
+        let p2_x = this.node.x  + this.node.getParent().x - light_w / 2;
         let p2_y = p1_y - light_h;
-        let p3_x = this.node.x + light_w / 2;
+        let p3_x = this.node.x  + this.node.getParent().x + light_w / 2;
         let p3_y = p1_y - light_h;
+
+        if (this.node.name == "search_light_") cc.log(p1_x - this.player.node.x);
 
         // left_slope: slope of p2, p1, right_slope: slope of p3, p1, player_slope: slope of player, p1
         let left_slope = (p2_y - p1_y) / (p2_x - p1_x);
@@ -102,6 +104,7 @@ export default class SearchLight extends cc.Component {
         if(player_slope > left_slope && x > p2_x) return true;
         // player in right half triangle
         if(player_slope < right_slope && x < p3_x) return true;
+        if (this.node.name == "search_light_") cc.log("4");
         // player not in triangle
         return false;
     }
@@ -115,7 +118,7 @@ export default class SearchLight extends cc.Component {
 
     detectInRange(){
 
-        let distance = Math.abs(this.node.x - this.camera.x);
+        let distance = Math.abs(this.node.x + this.node.getParent().x - this.camera.x);
         if (distance <= 500) this.volume = 0.45;
         else if (distance <= 600) this.volume = 0.43;
         else if (distance <= 700) this.volume = 0.41;
@@ -139,7 +142,7 @@ export default class SearchLight extends cc.Component {
         }, this.missile_interval);
 
         let missile = cc.instantiate(this.missilePrefab);
-        let x = this.node.x;
+        let x = this.node.x + this.node.getParent().x;
         let y =  this.node.y - 60;
         missile.setPosition(x, y);
         missile.getComponent(cc.RigidBody).linearVelocity.x = (this.player.node.x - x) * 1.1; // set velocity

@@ -63,7 +63,7 @@ export default class Hammer extends cc.Component {
 
     detectInRange(){
         let camera = cc.find("Canvas/Main Camera");
-        let distance = Math.abs(this.node.x - camera.x);
+        let distance = Math.abs(this.node.x + this.node.getParent().x - camera.x);
 
         if (distance <= 480) this.volumn = 0.6;
         else if (distance <= 550) this.volumn = 0.4;

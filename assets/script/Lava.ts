@@ -40,12 +40,12 @@ export default class Lava extends cc.Component {
                     cc.audioEngine.setVolume(this.lava_audioID, this.volume);
                 }
             }
-            if (Math.abs(this.node.x - camera.x)<= 1000 && this.in_range == false){
+            if (Math.abs(this.node.x + this.node.getParent().x - camera.x)<= 1000 && this.in_range == false){
                 this.in_range = true;
                 this.lava_audioID = cc.audioEngine.playEffect(this.lava_effect, true);
                 cc.audioEngine.setVolume(this.lava_audioID, this.volume);
             }
-            else if(Math.abs(this.node.x - camera.x) >= 1000 && this.in_range == true){
+            else if(Math.abs(this.node.x + this.node.getParent().x - camera.x) >= 1000 && this.in_range == true){
                 this.in_range = false;
                 cc.audioEngine.stopEffect(this.lava_audioID);
             }
@@ -59,7 +59,7 @@ export default class Lava extends cc.Component {
 
     detectInRange(){
         let camera = cc.find("Canvas/Main Camera");
-        let distance = Math.abs(this.node.x - camera.x);
+        let distance = Math.abs(this.node.x + this.node.getParent().x - camera.x);
         if (distance <= 500) this.volume = 0.4;
         else if (distance <= 550) this.volume = 0.37;
         else if (distance <= 600) this.volume = 0.34;

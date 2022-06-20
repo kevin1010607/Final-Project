@@ -74,7 +74,7 @@ export default class DynamicSpike extends cc.Component {
 
     detectInRange(){
         let camera = cc.find("Canvas/Main Camera");
-        let distance = Math.abs(this.node.x - camera.x);
+        let distance = Math.abs(this.node.x + this.node.getParent().x - camera.x);
         if (this.node.name == "dynamic_spike_1") cc.log(distance)
 
         if (distance <= 450) {
