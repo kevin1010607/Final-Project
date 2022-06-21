@@ -97,6 +97,9 @@ export default class Menu extends cc.Component {
     @property(cc.AudioClip)
     button2_effect: cc.AudioClip = null;
 
+    @property(cc.AudioClip)
+    background_music: cc.AudioClip = null;
+
     private userName: string = null;
     private highScore: number = null;
 
@@ -154,12 +157,10 @@ export default class Menu extends cc.Component {
         let user = firebase.auth().currentUser;
         let email = user.email;
         let uid = user.uid;
-        cc.log(email);
         //this.userName = user.substr(0, email.indexOf('@'));
         var THIS = this;
         var CC = cc;
         firebase.database().ref('user/' + uid).once('value').then((snapshot) => {
-            console.log(snapshot.val());
             THIS.highScore = Number(snapshot.val().score);
             THIS.score.getComponent(cc.Label).string = THIS.highScore.toString();
         });
@@ -170,7 +171,6 @@ export default class Menu extends cc.Component {
             var sorted = Object.keys(data).sort((a, b) => {
                 return data[b].score - data[a].score;
             });
-            CC.log(sorted.length);
             let n = sorted.length;
             if (n > 6)
                 n = 6;
@@ -286,6 +286,7 @@ export default class Menu extends cc.Component {
 
 
     start() {
+        if (!cc.audioEngine.isMusicPlaying()) cc.audioEngine.playMusic(this.background_music, true);
         let action = cc.sequence(cc.moveBy(0.3, -275, 0), cc.moveBy(0.3, -275, 0));
         this.board.node.runAction(action);
         this.loadUserData();

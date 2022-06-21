@@ -41,6 +41,7 @@ export default class Main extends cc.Component {
     @property(cc.AudioClip)
     button2_effect: cc.AudioClip = null;
 
+
     moving_distance: number = 230;
 
     loadSignUp() {
@@ -121,10 +122,12 @@ export default class Main extends cc.Component {
     }
 
     start() {
+        if (!cc.audioEngine.isMusicPlaying()) cc.audioEngine.playMusic(this.background_music, true);
+        cc.audioEngine.stopAllEffects();
+        cc.audioEngine.setMusicVolume(0.8);
+
         let action = cc.sequence(cc.moveBy(0.4, -this.moving_distance - 20, 0), cc.moveBy(0.4, -this.moving_distance - 20, 0)).easing(cc.easeOut(1.5));
         this.board.node.runAction(action);
-        cc.audioEngine.playMusic(this.background_music, true);
-        cc.audioEngine.setMusicVolume(0.8);
 
         cc.find("Canvas/board/logIn").on(cc.Node.EventType.MOUSE_DOWN, () => {
             cc.audioEngine.playEffect(this.button_effect, false);

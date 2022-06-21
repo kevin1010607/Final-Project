@@ -182,6 +182,7 @@ export default class EditorManager extends cc.Component {
     }
 
     start () {
+        cc.audioEngine.stopAllEffects();
         this.playBGM();
         cc.find("Canvas/background").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);
         cc.find("Canvas/underworld").on(cc.Node.EventType.MOUSE_DOWN, (e) => {this.placeOrCancelObject(e)}, this);

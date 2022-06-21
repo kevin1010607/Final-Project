@@ -98,6 +98,7 @@ export default class EditorPlayManager extends cc.Component {
     }
 
     start () {
+        cc.audioEngine.stopAllEffects();
         this.bindingParentNode();
         this.placeAllBlock();
         this.createBoundary();

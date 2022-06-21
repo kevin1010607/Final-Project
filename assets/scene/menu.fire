@@ -23464,6 +23464,9 @@
     "button2_effect": {
       "__uuid__": "536b69b0-d784-400b-8bc3-a20f925a9884"
     },
+    "background_music": {
+      "__uuid__": "9b3b9a73-b128-436d-a443-cbccd7593e77"
+    },
     "_id": "64t5UGRRpNNZJoQXiVV1Ll"
   }
 ]
